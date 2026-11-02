@@ -58,3 +58,32 @@ Three.js 使用 `https://esm.sh/three@0.170.0`，因此首次启动需要能够�
 - `voxel.js` — 装饰体素云
 - `fallback.js` — Canvas 2D 兼容显示
 - `projector.css` / `cinema.css` — 投影仪和影院视觉样式
+
+
+## Cinema V3 · 动画调速与粒子特效
+
+页面右上角（Android 投影仪为右下角）点击 **「动画控制」**，可以使用：
+
+- 调速滑条：**0.25×–3.00×**，快速按钮 **0.5×、1×、1.5×、2×**。
+- **暂停 / 继续**：停止/恢复粒子形变、星云旋转和镜头运动。帧率目标不随倍速改变，避免因加速导致过度渲染。
+- **配色**：银河蓝 → 霓虹紫 → 鎏金色，可循环切换主粒子与装饰粒子色彩。
+- **粒子绽放**：触发可复用的径向星光爆发和金色/霓虹冲击波；中奖时自动触发鎏金爆发。
+- **光效强度**：0–1.7 倍，可降低亮度以改善投影对比度。
+
+本次引入轻量的 **双层银河光点、发光圆形粒子精灵、流星拖尾、可重复使用的粒子爆发缓冲区和环形冲击波**，按 low/medium/high 档位动态控制粒子数。特效增加少量 draw calls，避免大规模透明后处理。
+
+倍速通过**统一虚拟动画时钟**控制场景运动及 2027 形态切换，避免加速时增加 draw calls；中奖卡片展示时间仍按现实时间计算，以保证现场易读性。无法使用 WebGL 时，2D fallback 也支持调速与基础特效。
+
+### 验证
+
+```bash
+node tests/controls-smoke.cjs
+node --check app.js
+node --check effects.js
+node --check voxel.js
+node --check fallback.js
+```
+
+GitHub Pages: https://zinianly-aide.github.io/lottery-2027-cinema/
+
+投影仪调试入口： https://zinianly-aide.github.io/lottery-2027-cinema/?quality=low&fps=1

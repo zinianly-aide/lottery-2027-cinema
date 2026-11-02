@@ -1,0 +1,21 @@
+/* Accessible, lightweight playback controls independent from operator controls. */
+.speed-dock{position:fixed;z-index:30;top:16px;right:18px;width:282px;max-width:calc(100vw - 30px);color:#eafaff;background:rgba(4,16,42,.94);border:1px solid rgba(88,193,255,.65);border-radius:15px;box-shadow:0 8px 32px #030917aa,0 0 22px #0876ff44;font:13px/1.45 system-ui,'PingFang SC',sans-serif;overflow:hidden}
+.speed-dock summary{list-style:none;cursor:pointer;user-select:none;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;font-weight:700;letter-spacing:.2px;touch-action:manipulation}
+.speed-dock summary::-webkit-details-marker{display:none}
+.speed-dock summary::after{content:'▾';color:#73d9ff;font-size:16px;margin-left:8px}
+.speed-dock[open] summary::after{content:'▴'}
+.speed-dock .dock-body{border-top:1px solid #31739b88;padding:13px 14px 14px}
+.speed-dock .dock-title{display:flex;align-items:center;justify-content:space-between;color:#a8e6ff;margin-bottom:6px}
+.speed-dock .dock-title strong{font-size:17px;color:#fff;letter-spacing:1px}
+.speed-dock input[type='range']{width:100%;display:block;margin:10px 0 12px;accent-color:#4bd7ff;cursor:pointer;min-height:20px}
+.speed-dock .dock-buttons{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0 11px}
+.speed-dock button{border:1px solid #3982b3;background:#112a51;border-radius:8px;padding:8px 10px;color:#dcefff;font:600 12px system-ui,sans-serif;cursor:pointer;min-height:34px;flex:1;white-space:nowrap}
+.speed-dock button:hover,.speed-dock button:focus-visible{background:#1a5688;outline:2px solid #74dbff;outline-offset:1px}
+.speed-dock button.active{background:linear-gradient(120deg,#1165a8,#5333a7);border-color:#75ddff;color:white;box-shadow:0 0 14px #188eff65}
+.speed-dock .action-buttons button{border-color:#9473ca;background:#33245c}
+.speed-dock .dock-help{margin:8px 0 0;color:#90adcd;font-size:11px}
+.speed-dock .dock-divider{height:1px;background:linear-gradient(90deg,transparent,#376f9d,transparent);margin:9px 0}
+body.projector .speed-dock{top:auto;bottom:18px;right:18px;width:262px;border-color:#387eae;background:#06142cf2}
+body.projector .speed-dock summary{padding:9px 12px;font-size:12px}
+@media(max-width:700px){.speed-dock{top:auto;bottom:10px;right:10px;width:250px}.speed-dock .dock-body{padding:10px}}
+@media(prefers-reduced-motion:reduce){.speed-dock *{transition:none!important}}

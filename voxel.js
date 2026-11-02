@@ -26,8 +26,8 @@ export function createVoxelCloud(THREE, scene, {quality='medium'} = {}) {
   });
   let intensity=0,target=0;
   const setVisible = enabled => {target=enabled?1:0;groups.visible=true;};
-  const update = seconds => {
-    intensity+=(target-intensity)*.045;
+  const update = (seconds,dt=1/30) => {
+    intensity+=(target-intensity)*(1-Math.exp(-Math.max(0,dt)*2.1));
     const drift=Math.sin(seconds*.22)*.9;
     groups.position.z=drift;groups.rotation.y=Math.sin(seconds*.1)*.06;
     groups.scale.setScalar(.85+intensity*.15);
