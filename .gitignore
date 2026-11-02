@@ -1,0 +1,16 @@
+# Local-only artifacts and configuration
+.DS_Store
+.env
+.env.*
+!.env.example
+*.log
+*.pid
+*.apk
+*.keystore
+chrome-profile/
+node_modules/
+dist/
+build/
+tmp/
+*.backup.*
+*.pre-perf.*
