@@ -87,3 +87,35 @@ node --check fallback.js
 GitHub Pages: https://zinianly-aide.github.io/lottery-2027-cinema/
 
 投影仪调试入口： https://zinianly-aide.github.io/lottery-2027-cinema/?quality=low&fps=1
+
+## Cinema V4：3 秒倒计时 + 六位工号翻牌揭晓
+
+这一版增加了与 3D 粒子背景解耦的 HTML/CSS 记分牌组件；在低画质投影仪上播放翻牌时，会暂停被遮住的 WebGL 场景绘制，以避免不必要的 GPU 开销。
+
+- 工号统一显示为 **6 位**。当前 2,000 人演示池为 `000001`–`002000`；仍可输入较短的数字，系统会自动补齐前导零。
+- 前三位固定显示，后三位起初显示 `? ? ?`；**倒计时结束后，按百位→十位→个位逐张翻牌**。
+- 中奖名单在开始播放前已由队列确定。翻牌只是展示动画，**不会在过程中重新随机抽人**。
+- 完整揭晓姓名、部门和模拟头像文字后，加入页面中奖墙；实际头像文件尚未导入。
+- 在控制台选择奖别和节奏：**普通**（3 秒倒计时，三张牌每张 0.5 秒）、**大奖**（3 秒倒计时，慢翻每张 0.72 秒）、**快速**（1 秒倒计时，每张 0.26 秒）。
+- 连续抽同一个奖别时，可选择让后续单人揭晓自动使用快速模式；演示按钮支持 **5 位同屏同步翻牌**。
+- 本页内防重复：中奖过或排队中的工号不能再次进入队列；点击重置会取消未完成的定时器。注意**刷新页面会丢失全部名单状态**。
+
+操作：打开 [GitHub Pages Demo](https://zinianly-aide.github.io/lottery-2027-cinema/?v=cinema4)，在电脑上的「现场控制台」选择奖项、模式，输入工号如 `000123` 并点击「翻牌揭晓」。若使用 Android 投影仪，控制台默认隐藏，应通过有操作面板的电脑浏览器演示；当前静态 Demo **没有跨设备同步**，不能直接用电脑控制另一个设备的页面。
+
+第三方开发者可在浏览器控制台调用：
+
+```js
+window.cinemaLottery.enqueue('000123', {prize:'一等奖', mode:'grand'});
+window.cinemaLottery.enqueue([123,456,789,1001,2000], {prize:'二等奖',mode:'normal'});
+```
+
+本地检查：
+
+```bash
+node tests/reveal-smoke.cjs
+node tests/lottery-flow-smoke.cjs
+node tests/controls-smoke.cjs
+node tests/effects-smoke.cjs
+```
+
+**正式活动提醒：** 目前所有姓名和部门为模拟数据，无真实员工头像、持久化、奖池审计或权限管理；把这份演示用于真实抽奖前应补齐后台中奖名单服务与同步机制。

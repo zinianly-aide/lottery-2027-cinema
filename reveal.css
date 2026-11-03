@@ -1,0 +1,54 @@
+/* Lightweight scoreboard reveal: CSS transforms only; no extra WebGL render pass. */
+.reveal-overlay[hidden], .reveal-profile[hidden], .reveal-countdown[hidden]{display:none!important}
+.reveal-overlay{position:fixed;inset:0;z-index:21;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:clamp(10px,2vh,25px);padding:clamp(12px,3vw,40px);box-sizing:border-box;color:#fff;background:radial-gradient(ellipse at 50% 50%,#11234ce8 0%,#07102be9 56%,#020817f6 100%);font-family:system-ui,'PingFang SC',sans-serif;text-align:center;opacity:0;transition:opacity .25s ease;isolation:isolate}
+.reveal-overlay.visible{opacity:1}
+.reveal-overlay:before{content:'';position:absolute;inset:3%;border:1px solid #6bbfff44;box-shadow:inset 0 0 44px #168bff18,0 0 80px #421b9259;pointer-events:none;border-radius:24px;z-index:-1}
+.reveal-head{flex-shrink:0}
+.reveal-kicker{font-size:clamp(11px,1.1vw,16px);letter-spacing:.38em;color:#8cceff;text-shadow:0 0 12px #19a1fb}
+.reveal-prize{font-weight:800;font-size:clamp(24px,3vw,54px);letter-spacing:.12em;margin:4px auto;color:#f9dca4;text-shadow:0 0 24px #ffc65a8c}
+.reveal-subtitle{font-size:clamp(13px,1.3vw,19px);color:#b0cdf8;letter-spacing:.2em}
+.reveal-countdown{font-variant-numeric:tabular-nums;font-size:clamp(62px,11vh,125px);font-weight:900;line-height:1.04;color:#fff4cb;text-shadow:0 0 25px #ffc86fae,0 0 65px #b979f590;animation:count-pop .6s ease-out}
+.reveal-countdown.pop{animation:count-pop .6s ease-out}
+@keyframes count-pop{0%{transform:scale(1.55);opacity:.25}55%{transform:scale(.98);opacity:1}100%{transform:scale(1)}}
+.reveal-cards{display:flex;flex-wrap:wrap;justify-content:center;align-content:center;gap:clamp(8px,1.2vw,22px);width:100%;max-width:1800px;max-height:75vh;overflow:auto;padding:6px;box-sizing:border-box}
+.reveal-tile{flex:0 1 min(650px,95%);min-width:0;border:1px solid #8bbdf988;background:linear-gradient(145deg,#122d62e8 0%,#091d42ed 70%,#211338ee 100%);border-radius:18px;padding:clamp(12px,1.7vw,26px);box-shadow:0 12px 40px #02081399,inset 0 1px #d3e5ff33;box-sizing:border-box}
+.reveal-tile-rank{color:#e2ca98;font-size:clamp(11px,1vw,15px);letter-spacing:.25em;margin-bottom:12px}
+.reveal-digits{display:flex;align-items:center;justify-content:center;gap:clamp(3px,.5vw,10px);font-variant-numeric:tabular-nums;font-feature-settings:'tnum';white-space:nowrap}
+.digit-slot{--flip-duration:460ms;display:grid;place-items:center;position:relative;flex:0 1 74px;aspect-ratio: .73;min-width:0;max-width:74px;perspective:550px;border:1px solid #507daf;border-radius:8px;background:linear-gradient(180deg,#061127 0%,#071b3c 49%,#020b19 50%,#122953 100%);box-shadow:inset 0 2px 6px #0109179c,0 0 20px #007fff40;overflow:hidden}
+.digit-fixed{border-color:#31537a;opacity:.74}
+.digit-flip{border-color:#c5a76c;box-shadow:0 0 13px #ffc36244,inset 0 2px 6px #010917b8}
+.digit-slot:after{content:'';position:absolute;left:0;right:0;top:50%;border-top:2px solid #030b19a6;pointer-events:none;z-index:4}
+.digit-front,.digit-back{position:absolute;inset:0;display:grid;place-items:center;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:clamp(32px,5vw,80px);font-weight:900;color:#e1f2ff;text-shadow:0 0 15px #54bcff;backface-visibility:hidden;transform-origin:center;line-height:1}
+.digit-back{transform:rotateX(90deg);opacity:0;color:#ffe4a8;text-shadow:0 0 18px #ffbd58}
+.digit-slot.flipping .digit-front{animation:flip-out var(--flip-duration) ease-in-out forwards}
+.digit-slot.flipping .digit-back{animation:flip-in var(--flip-duration) ease-in-out forwards}
+.digit-slot.revealed .digit-front{color:#ffe5b5;text-shadow:0 0 18px #efba5b}
+@keyframes flip-out{0%,47%{transform:rotateX(0);opacity:1}50%,100%{transform:rotateX(-90deg);opacity:0}}
+@keyframes flip-in{0%,48%{transform:rotateX(90deg);opacity:0}51%,100%{transform:rotateX(0);opacity:1}}
+.reveal-divider{color:#9ec7f2;font-size:clamp(16px,2.2vw,35px);align-self:center}
+.reveal-profile{display:flex;align-items:center;justify-content:center;gap:clamp(10px,1.5vw,20px);margin-top:17px;opacity:0;transform:translateY(15px) scale(.96)}
+.reveal-profile.in{animation:profile-open .65s cubic-bezier(.2,1,.3,1) forwards}
+@keyframes profile-open{to{transform:translateY(0) scale(1);opacity:1}}
+.reveal-portrait{width:clamp(48px,5vw,88px);height:clamp(48px,5vw,88px);flex:none;display:grid;place-items:center;border-radius:50%;border:2px solid #ffdc95;background:linear-gradient(135deg,#147dc3,#6540bb,#d39457);font-size:clamp(26px,3vw,48px);box-shadow:0 0 23px #f4ae5a6b}
+.reveal-profile-text{display:flex;flex-direction:column;text-align:left;gap:6px;min-width:0}
+.reveal-person{font-size:clamp(19px,2.3vw,35px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.reveal-department{color:#b1d6ff;font-size:clamp(12px,1.2vw,17px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.reveal-overlay[data-mode="grand"] .digit-slot{--flip-duration:620ms}
+.reveal-overlay[data-mode="quick"] .digit-slot{--flip-duration:220ms}
+.reveal-overlay[data-layout="group"] .reveal-tile{flex:1 1 290px;max-width:calc(50% - 10px);padding:clamp(11px,1.25vw,19px)}
+.reveal-overlay[data-layout="group"] .digit-slot{max-width:48px;flex-basis:48px}
+.reveal-overlay[data-layout="group"] .digit-front,.reveal-overlay[data-layout="group"] .digit-back{font-size:clamp(28px,3vw,49px)}
+.reveal-overlay[data-layout="group"] .reveal-person{font-size:clamp(17px,1.8vw,25px)}
+.reveal-overlay[data-layout="group"] .reveal-profile{margin-top:13px}
+.reveal-overlay[data-layout="group"] .reveal-portrait{width:50px;height:50px;font-size:28px}
+@media(min-width:1400px){.reveal-overlay[data-layout="group"] .reveal-tile{flex-basis:290px;max-width:calc(20% - 18px)}.reveal-overlay[data-layout="group"] .digit-slot{max-width:42px;flex-basis:42px}.reveal-overlay[data-layout="group"] .digit-front,.reveal-overlay[data-layout="group"] .digit-back{font-size:38px}}
+@media(max-width:760px){.reveal-overlay{padding:10px;gap:8px}.reveal-tile{padding:11px;max-width:100%}.digit-slot{flex-basis:47px;max-width:47px}.digit-front,.digit-back{font-size:35px}.reveal-cards{max-height:75vh}.reveal-overlay[data-layout="group"] .reveal-tile{flex-basis:240px;max-width:calc(50% - 5px)}.reveal-overlay[data-layout="group"] .digit-slot{flex-basis:30px;max-width:30px}.reveal-overlay[data-layout="group"] .digit-front,.reveal-overlay[data-layout="group"] .digit-back{font-size:25px}}
+@media(prefers-reduced-motion:reduce){.reveal-countdown,.digit-slot.flipping .digit-front,.digit-slot.flipping .digit-back,.reveal-profile.in{animation-duration:.01ms!important}.reveal-overlay{transition:none}}
+
+/* Reveal emphasis is CSS-only while the low-power WebGL scene is frozen. */
+.reveal-overlay.celebrate:after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;background:radial-gradient(ellipse at center,#ffe7ac77 0%,#ffe7ac00 55%);animation:reveal-flash 850ms ease-out forwards}
+@keyframes reveal-flash{from{opacity:.95;transform:scale(.75)}to{opacity:0;transform:scale(1.3)}}
+body.reveal-running .speed-dock{opacity:0;pointer-events:none}
+body.reveal-running .control{pointer-events:none;opacity:.45}
+
+body.reveal-running #fps-hud{opacity:.15;pointer-events:none}

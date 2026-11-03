@@ -19,3 +19,12 @@ body.projector .speed-dock{top:auto;bottom:18px;right:18px;width:262px;border-co
 body.projector .speed-dock summary{padding:9px 12px;font-size:12px}
 @media(max-width:700px){.speed-dock{top:auto;bottom:10px;right:10px;width:250px}.speed-dock .dock-body{padding:10px}}
 @media(prefers-reduced-motion:reduce){.speed-dock *{transition:none!important}}
+
+/* Lottery operator options: styling scoped to the operator panel */
+.control .draw-settings{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0}
+.control .draw-settings>label{flex:none;font-size:12px;color:#a9d9ff}
+.control select{background:#12345a;color:#eef7ff;border:1px solid #3979ae;padding:6px;border-radius:7px;min-width:0;max-width:165px}
+.control .draw-check{display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:12px}
+.control .draw-check input{width:15px;height:15px;margin:0;accent-color:#2bbcff}
+.control #draw5{border-color:#b68b63;color:#ffe4b4}
+@media(max-height:750px){.control .draw-settings{margin:3px 0}.control select{padding:4px}}
