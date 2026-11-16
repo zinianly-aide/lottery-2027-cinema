@@ -1,15 +1,15 @@
 // Parametric curled-horn surface; photo sizes follow depth and surface importance.
 export function selectPhotoAnchors(_data,_width,_height,limit=1800){
- const out=[],rows=Math.floor(limit/12),rand=n=>{const v=Math.sin(n*71.93)*43758.54;return v-Math.floor(v)};
+ const out=[],bands=18,rows=Math.floor(limit/(bands*2)),rand=n=>{const v=Math.sin(n*71.93)*43758.54;return v-Math.floor(v)};
  function curve(t){const seg=t<.5?[[8,12],[13,26],[28,25],[26,7]]:[[26,7],[27,-7],[13,-6],[17,1]],u=t<.5?t*2:(t-.5)*2,q=1-u;
  return {x:q*q*q*seg[0][0]+3*q*q*u*seg[1][0]+3*q*u*u*seg[2][0]+u*u*u*seg[3][0],y:q*q*q*seg[0][1]+3*q*q*u*seg[1][1]+3*q*u*u*seg[2][1]+u*u*u*seg[3][1]}}
  for(let row=0;row<rows;row++){const t=(row+.5)/rows,c=curve(t),next=curve(Math.min(1,t+.001)),dx=next.x-c.x,dy=next.y-c.y,len=Math.hypot(dx,dy),radius=2.6*Math.pow(1-t,.55)+.22;
- for(let band=0;band<6;band++){const phi=(band+.5+(row%2)*.16)/6*Math.PI*2,r=radius*(.99+rand(row*6+band)*.02),sn=Math.sin(phi),cs=Math.cos(phi);
- for(const side of [-1,1]){const index=row*12+band*2+(side>0?1:0),nx=side*(-dy/len)*sn,ny=dx/len*sn,nz=cs;
- const front=(cs+1)/2,hero=front>.8&&rand(index+9)>.91,weight=hero?1:front>.55?.7:.3;
- const spacing=Math.min(len/.001/rows,radius*.9),scale=spacing*(hero?1.4:.68+rand(index+11)*.27)*(front>.5?1:.82);
+ for(let band=0;band<bands;band++){const phi=(band+.5+(row%2)*.16)/bands*Math.PI*2,r=radius*(.99+rand(row*bands+band)*.02),sn=Math.sin(phi),cs=Math.cos(phi);
+ for(const side of [-1,1]){const index=row*bands*2+band*2+(side>0?1:0),nx=side*(-dy/len)*sn,ny=dx/len*sn,nz=cs;
+ const front=(cs+1)/2,hero=front>.8&&rand(index+9)>.86,weight=hero?1:front>.55?.82:.35;
+ const spacing=Math.min(len/.001/rows,radius*.9),scale=spacing*(hero?1.32:.82+rand(index+11)*.16)*(front>.5?1:.7);
  out.push({x:side*(c.x-dy/len*sn*r),y:c.y+dx/len*sn*r,z:cs*r+1,side,nx,ny,nz,tx:side*dx/len,ty:dy/len,weight,
- width:scale*.88,height:scale,brightness:.35+front*.65});
+ width:scale*.88,height:scale,brightness:.62+front*.38});
  }}}
  // Stratified order: reducing coverage removes whole rows evenly, with paired horns.
  const ordered=[],pairs=out.length/2;for(let i=0;i<pairs;i++){const k=(i*137)%pairs;ordered.push(out[k*2],out[k*2+1]);}
@@ -45,7 +45,7 @@ export function createRamPhotos(THREE,parent,uniforms,{quality='medium',maxTextu
  geo.setAttribute('tileIndex',new THREE.InstancedBufferAttribute(tiles,1));geo.setAttribute('importance',new THREE.InstancedBufferAttribute(weights,1));geo.setAttribute('brightness',new THREE.InstancedBufferAttribute(brightness,1));
  const mat=new THREE.ShaderMaterial({uniforms:photoUniforms,transparent:true,depthWrite:true,side:THREE.DoubleSide,
  vertexShader:'attribute float tileIndex,importance,brightness;varying vec2 vUv;varying float vTile,vWeight,vLight;uniform float gather,time;void main(){vUv=uv;vTile=tileIndex;vWeight=importance;vLight=brightness;vec4 p=instanceMatrix*vec4(position,1.);float a=tileIndex*2.39996;p.xyz+=(1.-gather)*vec3(sin(a)*50.,cos(a)*35.,sin(a*1.7)*20.);gl_Position=projectionMatrix*modelViewMatrix*p;}',
- fragmentShader:'uniform sampler2D atlas;uniform float tileCount,gather,intensity,grid;varying vec2 vUv;varying float vTile,vWeight,vLight;void main(){if(gather<.02)discard;float edge=min(min(vUv.x,1.-vUv.x),min(vUv.y,1.-vUv.y));if(edge<.018)discard;float k=mod(vTile,tileCount);vec2 cell=vec2(mod(k,grid),grid-1.-floor(k/grid));vec2 uv=(cell+mix(vec2(.035),vec2(.965),vUv))/grid;vec3 photo=texture2D(atlas,uv).rgb;vec3 tint=mix(vec3(.2,.65,1.),vec3(.85,.25,1.),step(.5,mod(vTile,2.)));float detail=mix(.38,.92,vWeight);vec3 rgb=mix(tint*dot(photo,vec3(.3,.59,.11)),photo,detail);rgb*=vLight*(.75+vWeight*.25)*min(intensity,1.4);gl_FragColor=vec4(rgb,gather);}'
+ fragmentShader:'uniform sampler2D atlas;uniform float tileCount,gather,intensity,grid;varying vec2 vUv;varying float vTile,vWeight,vLight;void main(){if(gather<.02)discard;float edge=min(min(vUv.x,1.-vUv.x),min(vUv.y,1.-vUv.y));if(edge<.018)discard;float k=mod(vTile,tileCount);vec2 cell=vec2(mod(k,grid),grid-1.-floor(k/grid));vec2 uv=(cell+mix(vec2(.035),vec2(.965),vUv))/grid;vec3 photo=texture2D(atlas,uv).rgb;vec3 tint=mix(vec3(.2,.65,1.),vec3(.85,.25,1.),step(.5,mod(vTile,2.)));float detail=mix(.38,.92,vWeight);vec3 rgb=mix(tint*dot(photo,vec3(.3,.59,.11)),photo,detail);rgb*=vLight*(.88+vWeight*.12)*min(intensity,1.5);float rim=1.-smoothstep(.022,.055,edge);rgb=mix(rgb,tint*1.35*min(intensity,1.5),rim*.85);gl_FragColor=vec4(rgb,gather);}'
  });
  cards=new THREE.InstancedMesh(geo,mat,anchors.length);cards.frustumCulled=false;const dummy=new THREE.Object3D(),basis=new THREE.Matrix4();
  anchors.forEach((p,i)=>{const tangent=new THREE.Vector3(p.tx,p.ty,0).normalize(),normal=new THREE.Vector3(p.nx,p.ny,p.nz).normalize(),across=new THREE.Vector3().crossVectors(normal,tangent).normalize();basis.makeBasis(tangent,across,normal);

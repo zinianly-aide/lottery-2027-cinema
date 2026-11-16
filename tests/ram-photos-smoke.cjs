@@ -6,7 +6,8 @@ const sandbox={setTimeout,document:{createElement:()=>({getContext:()=>context})
 vm.createContext(sandbox);vm.runInContext(text+';this.api={selectPhotoAnchors,createRamPhotos};',sandbox);
 const data=new Uint8Array(640*360*4).fill(255);
 for(const limit of [960,1800,2000]){const a=sandbox.api.selectPhotoAnchors(data,640,360,limit);assert(a.length<=limit&&a.length>0);assert.equal(a.filter(p=>p.side<0).length,a.filter(p=>p.side>0).length);for(const p of a){assert(Math.abs(p.x)>5,'face must be clear');assert(Number.isFinite(p.z));assert(Math.abs(Math.hypot(p.nx,p.ny,p.nz)-1)<1e-6);assert(Math.abs(p.tx*p.nx+p.ty*p.ny)<1e-6,'surface tangent perpendicular to normal');}}
-const surface=sandbox.api.selectPhotoAnchors(data,640,360,1800);assert(surface.some(p=>p.z<0)&&surface.some(p=>p.z>3),'front and back surface depth');assert(new Set(surface.map(p=>p.width.toFixed(2))).size>10,'variable photo scale');assert(surface.some(p=>p.weight===1)&&surface.some(p=>p.weight===.3),'hierarchical weights');
+const sourceReference=fs.readFileSync(require('node:path').join(__dirname,'../ram-reference.js'),'utf8');const shader=sourceReference.match(/vertexShader:`([^`]+)`/)[1];assert(!shader.includes('photoMix'),'density must never dim base particles');assert(!shader.includes('masked'),'no rectangular shadow mask');
+const surface=sandbox.api.selectPhotoAnchors(data,640,360,1800);assert(surface.some(p=>p.z<0)&&surface.some(p=>p.z>3),'front and back surface depth');assert(new Set(surface.map(p=>p.width.toFixed(2))).size>10,'variable photo scale');assert(surface.some(p=>p.weight===1)&&surface.some(p=>p.weight===.35),'hierarchical weights');
 class Geo{setAttribute(){return this}dispose(){}}
 class Material{constructor(opts){Object.assign(this,opts)}dispose(){}}
 class Dummy{constructor(){this.position={set(){}};this.rotation={};this.quaternion={setFromRotationMatrix(){}};this.scale={set(){}};this.matrix={}}updateMatrix(){}}
