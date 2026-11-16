@@ -143,3 +143,6 @@ node tests/effects-smoke.cjs
 部署前本地实测：ZUK Chrome 低画质模式显示、模式往返切换、SVG 载入均正常；短时观察 28–29 FPS、DPR 0.78、约 11 draw calls。**此数值不是大眼橙投影仪的性能承诺**；投影仪 ADB 在本轮连接超时，还需单独进行远距离画面与长时间回归。
 
 新增文件：ram-shape.js（纯几何、颜色分配、2D 回退）、ram-visual.js（轻量线条和透明 SVG）、neon-ram-cinema.svg（适配 Cinema 的本地矢量图）、tests/ram-shape-smoke.cjs（各画质档测试）。
+
+### 参考图深度粒子羊首（2026-11-16）
+现场控制台点击“粒子羊首·参考图”，或使用 `?mode=ramref&quality=medium`。原羊首轮廓保留。图片采样深度浮雕并非360度模型；GPU负责聚合和环绕流光，复用调速、暂停、配色与光效强度。低/中/高三档按采样步长3/2/1控制数量。无WebGL时回退原羊首2D轮廓。

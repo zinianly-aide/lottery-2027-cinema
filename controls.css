@@ -35,3 +35,5 @@ body.projector .speed-dock summary{padding:9px 12px;font-size:12px}
 body.ram-active header small{color:#9adfff}
 body.ram-active header{text-shadow:0 0 24px #427aff77}
 body.ram-active #note{color:#91bce8}
+
+.control #ramref{border-color:#ad75d6;background:linear-gradient(120deg,#124b78,#542965);font-size:12px}

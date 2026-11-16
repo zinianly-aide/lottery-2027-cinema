@@ -19,7 +19,8 @@ const doc={addEventListener:()=>{},querySelector:s=>{const key=s.slice(1);assert
 let bursts=[],palettes=[],intensities=[],meshUpdates=0;
 const effects={palette:'galaxy',burst:k=>bursts.push(k),setPalette(k){this.palette=k;palettes.push(k);},setIntensity:n=>intensities.push(n)};
 const mesh={instanceColor:{needsUpdate:false},setColorAt(){meshUpdates++;}};
-const context={document:doc,window:{},effects,mesh,N:850,random:(n,k)=>((n*31+k)%100)/100,THREE:{Color:class{setHSL(){return this}}},morph:()=>{},playbackRate:1,paused:false,mobile:false,updateParticleColors:()=>{meshUpdates+=850;}};
+const referenceIntensities=[];
+const context={ramReference:{ready:true,setIntensity:n=>referenceIntensities.push(n)},document:doc,window:{},effects,mesh,N:850,random:(n,k)=>((n*31+k)%100)/100,THREE:{Color:class{setHSL(){return this}}},morph:()=>{},playbackRate:1,paused:false,mobile:false,updateParticleColors:()=>{meshUpdates+=850;}};
 vm.runInNewContext(script.slice(split),context);
 assert.equal(context.window.cinemaControls.speed,1);
 assert.equal(nodes['speed-value'].textContent,'1.00×');
@@ -34,7 +35,7 @@ chips[0].fire('click');assert.equal(context.window.cinemaControls.speed,.5);asse
 nodes['effect-preset'].fire('click');assert.equal(effects.palette,'neon');assert.equal(meshUpdates,850);
 nodes['effect-preset'].fire('click');assert.equal(effects.palette,'gold');
 nodes['effect-burst'].fire('click');assert.equal(bursts.at(-1),'gold');
-nodes['effect-intensity'].value='1.4';nodes['effect-intensity'].fire('input');assert.equal(intensities.at(-1),1.4);
+nodes['effect-intensity'].value='1.4';nodes['effect-intensity'].fire('input');assert.equal(intensities.at(-1),1.4);assert.equal(referenceIntensities.at(-1),1.4);assert.equal(context.window.cinemaControls.ramReferenceReady,true);
 context.window.cinemaControls.setSpeed(7);assert.equal(context.window.cinemaControls.speed,3);
 context.window.cinemaControls.setSpeed(0);assert.equal(context.window.cinemaControls.speed,.25);
 assert(script.includes('simClock+=dt*1000') && script.includes('effects.update(sec,dt)'),'virtual-time particle playback missing');
