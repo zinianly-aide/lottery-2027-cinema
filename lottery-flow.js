@@ -54,7 +54,7 @@
       if(normalized.some(id=>chosen.has(id)||pending.has(id))||new Set(normalized).size!==normalized.length){note('工号重复，或已经中奖／等待揭晓');return false;}
       const prize=config.prize||$('prize-select').value;
       const mode=config.mode||$('reveal-mode').value;
-      if(!['normal','grand','quick'].includes(mode)){note('不支持的揭晓节奏');return false;}
+      if(!['normal','grand','quick','long5','long8','long10'].includes(mode)){note('不支持的揭晓节奏');return false;}
       const batch={items:normalized.map(person),prize,mode};
       normalized.forEach(id=>pending.add(id));
       queue.push(batch);pump();

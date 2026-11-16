@@ -4,7 +4,10 @@
   const MODES = Object.freeze({
     normal: {countdown:3000,flip:500,hold:2300},
     grand:  {countdown:3000,flip:720,hold:3800},
-    quick:  {countdown:1000,flip:260,hold:1400}
+    quick:  {countdown:1000,flip:260,hold:1400},
+    long5:  {countdown:5000,flip:500,hold:2500},
+    long8:  {countdown:8000,flip:560,hold:2900},
+    long10: {countdown:10000,flip:620,hold:3200}
   });
   function id6(value) {
     if (!/^[0-9]{1,6}$/.test(String(value))) throw new Error('Invalid employee ID');
@@ -53,14 +56,14 @@
       const tile=element('article','reveal-tile');
       const rank=element('div','reveal-tile-rank',num?`幸运嘉宾 ${num}`:'幸运嘉宾');
       const digits=element('div','reveal-digits');
-      digits.setAttribute('aria-label','六位工号，后三位等待揭晓');
+      digits.setAttribute('aria-label','六位工号，后三位直接展示，前三位依次上下翻牌');
       const slots=[];
       for(let i=0;i<6;i++) {
         if(i===3)digits.appendChild(element('span','reveal-divider','·'));
-        const slot=element('div','digit-slot '+(i<3?'digit-fixed':'digit-flip'));
-        const face=element('span','digit-front',i<3?number[i]:'?');
+        const slot=element('div','digit-slot '+(i<3?'digit-flip':'digit-fixed'));
+        const face=element('span','digit-front',i<3?'?':number[i]);
         slot.appendChild(face);
-        if(i>=3){slot.appendChild(element('span','digit-back',number[i]));slots.push(slot);}
+        if(i<3){slot.appendChild(element('span','digit-back',number[i]));slots.push(slot);}
         digits.appendChild(slot);
       }
       const profile=element('div','reveal-profile');
@@ -90,18 +93,18 @@
       active=true;
       const ticks=Math.ceil(current.settings.countdown/1000);
       for(let x=1;x<ticks;x++)schedule(x*1000,()=>{countdown.textContent=String(ticks-x);countdown.classList.remove('pop');void countdown.offsetWidth;countdown.classList.add('pop');});
-      schedule(current.settings.countdown,()=>{countdown.hidden=true;subtitle.textContent='后三位依次翻牌';});
+      schedule(current.settings.countdown,()=>{countdown.hidden=true;subtitle.textContent='后三位已揭晓 · 前三位依次翻牌';});
       current.steps.forEach(({index,at})=>schedule(at,()=>{
         prepared.forEach(({slots,number})=>{
           const slot=slots[index];
-          slot.querySelector('.digit-back').textContent=number[index+3];
+          slot.querySelector('.digit-back').textContent=number[index];
           slot.classList.add('flipping');
-          slot.setAttribute('aria-label',`第 ${index+4} 位：${number[index+3]}`);
+          slot.setAttribute('aria-label',`第 ${index+1} 位：${number[index]}`);
         });
       }));
       current.steps.forEach(({index,at})=>schedule(at+(current.mode==='grand'?630:current.mode==='quick'?230:470),()=>{
         prepared.forEach(({slots,number})=>{
-          slots[index].querySelector('.digit-front').textContent=number[index+3];
+          slots[index].querySelector('.digit-front').textContent=number[index];
           slots[index].classList.remove('flipping');
           slots[index].classList.add('revealed');
         });
