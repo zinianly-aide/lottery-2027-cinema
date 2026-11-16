@@ -8,3 +8,6 @@ body.projector .control,body.projector .note{display:none!important}
 body.projector .wall{left:5%;bottom:5%;max-width:85%;max-height:20%;overflow:hidden;z-index:4}
 body.projector .win{z-index:10;max-width:70%;box-sizing:border-box}
 body.projector #screen{z-index:1}
+
+/* Projector keeps the existing controls hidden; ram can open via ?mode=ram. */
+body.projector.ram-active header{text-shadow:0 0 22px #278eff,0 0 55px #7341cc}

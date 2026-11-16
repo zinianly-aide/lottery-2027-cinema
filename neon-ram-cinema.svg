@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 610" role="img" aria-label="2027 星河璀璨 · 正面银河霓虹羊首">
+ <defs>
+  <linearGradient id="horn" x1="0" x2="1" y1="0" y2="1">
+   <stop stop-color="#8de9ff"/><stop offset=".22" stop-color="#6c59ff"/><stop offset=".52" stop-color="#a16cff"/><stop offset=".76" stop-color="#fff6cd"/><stop offset="1" stop-color="#9d83e8"/>
+  </linearGradient>
+  <linearGradient id="hornRight" x1="0" x2="1" y1="1" y2="0">
+   <stop stop-color="#a4c5ff"/><stop offset=".35" stop-color="#ff639f"/><stop offset=".7" stop-color="#965bff"/><stop offset="1" stop-color="#8cecff"/>
+  </linearGradient>
+  <linearGradient id="face" x1="0" x2="1" y1="0" y2="1">
+   <stop stop-color="#8feaff"/><stop offset=".28" stop-color="#303d9c"/><stop offset=".56" stop-color="#6a37c9"/><stop offset=".83" stop-color="#875be8"/><stop offset="1" stop-color="#ffdbbf"/>
+  </linearGradient>
+  <linearGradient id="ribbon" x1="0" x2="1">
+   <stop stop-color="#009cff" stop-opacity="0"/><stop offset=".2" stop-color="#2087ff" stop-opacity=".9"/><stop offset=".5" stop-color="#ff7fe1" stop-opacity=".93"/><stop offset=".8" stop-color="#3afaff" stop-opacity=".75"/><stop offset="1" stop-color="#3ad6ff" stop-opacity="0"/>
+  </linearGradient>
+  <radialGradient id="halo"><stop stop-color="#6e93ff" stop-opacity=".55"/><stop offset=".4" stop-color="#7144dc" stop-opacity=".18"/><stop offset="1" stop-color="#0d0935" stop-opacity="0"/></radialGradient>
+  <filter id="blur"><feGaussianBlur stdDeviation="11"/></filter>
+  <filter id="neon" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur in="SourceGraphic" stdDeviation="4" result="glow"/><feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <pattern id="streaks" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M4 0L11 50 M26 0L34 50" stroke="#d5ecff" opacity=".13" stroke-width="1"/></pattern>
+ </defs>
+ <ellipse cx="800" cy="265" rx="475" ry="275" fill="url(#halo)"/>
+ <!-- wide cinematic ribbons -->
+ <path d="M-90 240 C195 500 290 82 505 185 S745 545 810 330 S1230 80 1680 230" fill="none" stroke="url(#ribbon)" stroke-width="63" stroke-opacity=".2" filter="url(#blur)"/>
+ <path d="M-90 237 C195 500 290 82 505 185 S745 545 810 330 S1230 80 1680 230" fill="none" stroke="url(#ribbon)" stroke-width="19" stroke-opacity=".42"/>
+ <path d="M-90 238 C195 498 290 84 505 186 S745 544 810 330 S1230 82 1680 231" fill="none" stroke="url(#ribbon)" stroke-width="3.5" filter="url(#neon)">
+
+ </path>
+ <path d="M30 385 C410 180 485 530 760 315 S1260 465 1580 280" fill="none" stroke="url(#ribbon)" stroke-width="12" opacity=".6" filter="url(#neon)"/>
+ <!-- body silhouette -->
+ <path d="M645 480 C631 410 649 348 679 320 Q800 263 920 320 C957 395 955 461 972 532 C914 580 691 583 634 537Z" fill="url(#face)" opacity=".75" stroke="#6684f9" stroke-opacity=".7" stroke-width="3"/>
+ <path d="M672 345 Q701 460 765 540 M935 346 Q903 463 831 546 M700 339Q729 453 783 548 M904 339Q882 452 813 548" stroke="#77dcff" stroke-opacity=".55" stroke-width="2" fill="none"/>
+ <!-- horns: rich curling left/right spiral silhouettes -->
+ <g filter="url(#neon)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M720 187 C646 52 462 14 408 148 C342 309 448 423 556 352 C621 302 574 215 505 259" stroke="url(#horn)" stroke-width="69" opacity=".88"/>
+  <path d="M880 187 C954 52 1138 14 1192 148 C1258 309 1152 423 1044 352 C979 302 1026 215 1095 259" stroke="url(#hornRight)" stroke-width="69" opacity=".88"/>
+  <path d="M721 187 C646 52 462 14 408 148 C342 309 448 423 556 352 C621 302 574 215 505 259" stroke="#f4efff" stroke-width="5" opacity=".86"/>
+  <path d="M879 187 C954 52 1138 14 1192 148 C1258 309 1152 423 1044 352 C979 302 1026 215 1095 259" stroke="#ffd9fc" stroke-width="5" opacity=".86"/>
+ </g>
+ <!-- carved spiral grooves -->
+ <g fill="none" stroke="#d4caff" stroke-width="2.1" opacity=".55">
+  <path d="M669 104 L620 158 M623 66L574 122 M562 56L527 114 M499 79L468 147 M448 132L409 177 M414 213L374 240 M431 300L390 321 M497 351L478 400 M558 318L582 360"/>
+  <path d="M931 104L980 158 M977 66L1026 122 M1038 56L1073 114 M1101 79L1132 147 M1152 132L1191 177 M1186 213L1226 240 M1169 300L1210 321 M1103 351L1122 400 M1042 318L1018 360"/>
+ </g>
+ <!-- front-facing face -->
+ <path d="M728 180 Q800 148 872 180 C925 215 907 313 868 386 Q845 437 803 458 Q756 443 730 386 C692 297 682 226 728 180Z"
+  fill="url(#face)" stroke="#b9c6ff" stroke-width="4" filter="url(#neon)"/>
+ <!-- ears -->
+ <path d="M729 229 Q667 170 596 196 Q610 271 728 269Z" fill="#6b3ac0" stroke="#a99bff" stroke-width="5"/>
+ <path d="M871 229 Q933 170 1004 196 Q990 271 872 269Z" fill="#6036b9" stroke="#a99bff" stroke-width="5"/>
+ <path d="M704 232 Q667 202 638 213 M895 232 Q931 202 962 213" fill="none" stroke="#ffa7eb" opacity=".8" stroke-width="5"/>
+ <!-- brow and muzzle -->
+ <path d="M742 270 Q768 247 791 266 M809 266Q830 247 856 270" stroke="#e0b9ff" stroke-width="5" fill="none" stroke-linecap="round"/>
+ <path d="M761 278 Q778 265 792 281 Q779 295 762 282Z M808 281 Q822 265 841 278 Q830 295 809 282Z" fill="#090f34" stroke="#f5ddff" stroke-width="2"/>
+ <circle cx="783" cy="277" r="4.5" fill="#c2fcff"/><circle cx="832" cy="277" r="4.5" fill="#ffeafc"/>
+ <path d="M745 316 Q800 299 856 316 L849 373 Q830 408 800 418 Q772 406 751 371Z" fill="#547dc5" opacity=".64"/>
+ <path d="M783 355 Q800 342 817 355 L801 372Z" fill="#162354" stroke="#ffcbf0" stroke-width="2.2"/>
+ <path d="M801 372 L801 386 M801 386 Q785 398 769 382 M801 386 Q817 398 831 382" stroke="#fbe5ee" stroke-width="3" fill="none" stroke-linecap="round"/>
+ <!-- glowing flecks -->
+ <g fill="#ffe2fb" opacity=".95"><circle cx="310" cy="105" r="2"/><circle cx="1204" cy="71" r="2"/><circle cx="389" cy="420" r="2"/><circle cx="1175" cy="406" r="2"/><circle cx="733" cy="121" r="2"/><circle cx="866" cy="120" r="2"/><circle cx="1046" cy="484" r="2"/><circle cx="612" cy="472" r="2"/></g>
+</svg>

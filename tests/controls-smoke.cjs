@@ -12,18 +12,19 @@ class FakeElement{
   fire(name){assert(this.listeners[name],`missing handler ${name}`);this.listeners[name]({target:this});}
   setAttribute(name,value){this[name]=value;}
 }
-const names=['speed-range','speed-value','speed-pause','dock-label','speed-dock','effect-preset','effect-burst','effect-intensity'];
+const names=['speed-range','speed-value','speed-pause','dock-label','speed-dock','effect-preset','effect-burst','effect-intensity','cinema-fullscreen'];
 const nodes=Object.fromEntries(names.map(n=>[n,new FakeElement()]));
 const chips=[.5,1,1.5,2].map(n=>new FakeElement({speed:String(n)}));
-const doc={querySelector:s=>{const key=s.slice(1);assert(nodes[key],`unknown selector ${s}`);return nodes[key];},querySelectorAll:s=>{assert.equal(s,'[data-speed]');return chips;}};
+const doc={addEventListener:()=>{},querySelector:s=>{const key=s.slice(1);assert(nodes[key],`unknown selector ${s}`);return nodes[key];},querySelectorAll:s=>{assert.equal(s,'[data-speed]');return chips;}};
 let bursts=[],palettes=[],intensities=[],meshUpdates=0;
 const effects={palette:'galaxy',burst:k=>bursts.push(k),setPalette(k){this.palette=k;palettes.push(k);},setIntensity:n=>intensities.push(n)};
 const mesh={instanceColor:{needsUpdate:false},setColorAt(){meshUpdates++;}};
-const context={document:doc,window:{},effects,mesh,N:850,random:(n,k)=>((n*31+k)%100)/100,THREE:{Color:class{setHSL(){return this}}},morph:()=>{},playbackRate:1,paused:false,mobile:false};
+const context={document:doc,window:{},effects,mesh,N:850,random:(n,k)=>((n*31+k)%100)/100,THREE:{Color:class{setHSL(){return this}}},morph:()=>{},playbackRate:1,paused:false,mobile:false,updateParticleColors:()=>{meshUpdates+=850;}};
 vm.runInNewContext(script.slice(split),context);
 assert.equal(context.window.cinemaControls.speed,1);
 assert.equal(nodes['speed-value'].textContent,'1.00×');
 assert.equal(nodes['speed-dock'].open,true,'desktop panel must be visible');
+assert(nodes['cinema-fullscreen'].listeners.click,'fullscreen button must be wired');
 nodes['speed-range'].value='2.35';nodes['speed-range'].fire('input');
 assert.equal(context.window.cinemaControls.speed,2.35);
 assert.equal(nodes['speed-value'].textContent,'2.35×');

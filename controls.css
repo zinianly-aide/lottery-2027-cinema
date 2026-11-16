@@ -28,3 +28,10 @@ body.projector .speed-dock summary{padding:9px 12px;font-size:12px}
 .control .draw-check input{width:15px;height:15px;margin:0;accent-color:#2bbcff}
 .control #draw5{border-color:#b68b63;color:#ffe4b4}
 @media(max-height:750px){.control .draw-settings{margin:3px 0}.control select{padding:4px}}
+
+/* Neon ram uses the existing Cinema control shape and original galaxy palette. */
+.control #ram{border-color:#5b9cd2;color:#d7f1ff;background:linear-gradient(115deg,#0e3760,#272452)}
+.control #ram:hover,.control #ram:focus-visible{background:linear-gradient(115deg,#195a92,#473e8c)}
+body.ram-active header small{color:#9adfff}
+body.ram-active header{text-shadow:0 0 24px #427aff77}
+body.ram-active #note{color:#91bce8}
