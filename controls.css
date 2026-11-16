@@ -37,3 +37,5 @@ body.ram-active header{text-shadow:0 0 24px #427aff77}
 body.ram-active #note{color:#91bce8}
 
 .control #ramref{border-color:#ad75d6;background:linear-gradient(120deg,#124b78,#542965);font-size:12px}
+
+.speed-dock{max-height:calc(100dvh - 32px);overflow-y:auto}.speed-dock input[type=file]{width:100%;font-size:11px;margin:9px 0;color:#a8d8ff}.photo-import{color:#bfe8ff;font-size:12px}#ram-photo-status{font-size:11px;color:#b9a4d6;line-height:1.5}

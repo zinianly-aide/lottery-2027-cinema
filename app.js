@@ -1,4 +1,4 @@
-import { createRamReference } from './ram-reference.js?v=cinema6';
+import { createRamReference } from './ram-reference.js?v=cinema7';
 import { createVoxelCloud } from './voxel.js?v=cinema3';
 import { createParticleEffects } from './effects.js?v=cinema3';
 import { createRamVisual } from './ram-visual.js?v=cinema5';
@@ -27,6 +27,19 @@ window.cinemaLottery=window.LotteryFlow.create({
   onComplete:()=>{morph('text');effects.burst('gold');},
   onReset:()=>{autoShow=true;autoStage=0;simClock=0;morph('scatter');}
 });
+
+// Photo uploads are session-local and unrelated to winner selection.
+const photoInput=document.getElementById('ram-photo-files'),photoStatus=document.getElementById('ram-photo-status');
+let photoImportVersion=0;
+photoInput.addEventListener('change',async()=>{
+ const version=++photoImportVersion;photoStatus.textContent='正在生成照片图集…';
+ const result=await ramReference.photos.importFiles(photoInput.files);
+ if(version!==photoImportVersion||result.cancelled)return;
+ photoStatus.textContent=result.loaded?'已载入 '+result.loaded+' 张照片'+(result.failed?'，失败 '+result.failed+' 张':'')+(result.limited?'（最多256张）':''):'没有可读取的图片，保留当前图集';
+ photoInput.value='';autoShow=false;morph('ramref');
+});
+document.getElementById('ram-photo-ratio').addEventListener('input',e=>{ramReference.photos.setRatio(Number(e.target.value));document.getElementById('ram-photo-value').textContent=Math.round(Number(e.target.value)*100)+'%';});
+document.getElementById('ram-photo-reset').addEventListener('click',()=>{photoImportVersion++;ramReference.photos.reset();photoStatus.textContent='示例小羊 · 尚未导入真人照片';photoInput.value='';});
 
 // Playback controls are separate from the lottery operator panel, so they remain accessible on projectors.
 const speedRange=document.querySelector('#speed-range');
