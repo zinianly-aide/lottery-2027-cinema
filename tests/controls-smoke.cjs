@@ -20,7 +20,7 @@ let bursts=[],palettes=[],intensities=[],meshUpdates=0;
 const effects={palette:'galaxy',burst:k=>bursts.push(k),setPalette(k){this.palette=k;palettes.push(k);},setIntensity:n=>intensities.push(n)};
 const mesh={instanceColor:{needsUpdate:false},setColorAt(){meshUpdates++;}};
 const referenceIntensities=[];
-const context={ramReference:{ready:true,setIntensity:n=>referenceIntensities.push(n)},document:doc,window:{},effects,mesh,N:850,random:(n,k)=>((n*31+k)%100)/100,THREE:{Color:class{setHSL(){return this}}},morph:()=>{},playbackRate:1,paused:false,mobile:false,updateParticleColors:()=>{meshUpdates+=850;}};
+const context={qs:{get:()=>null},ramReference:{ready:true,setIntensity:n=>referenceIntensities.push(n)},document:doc,window:{},effects,mesh,N:850,random:(n,k)=>((n*31+k)%100)/100,THREE:{Color:class{setHSL(){return this}}},morph:()=>{},playbackRate:1,paused:false,mobile:false,updateParticleColors:()=>{meshUpdates+=850;}};
 vm.runInNewContext(script.slice(split),context);
 assert.equal(context.window.cinemaControls.speed,1);
 assert.equal(nodes['speed-value'].textContent,'1.00×');
