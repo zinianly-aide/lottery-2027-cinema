@@ -23,7 +23,22 @@ export function createRamPhotos(THREE,parent,uniforms,{quality='medium',maxTextu
  const photoUniforms={...uniforms,atlas:{value:texture},tileCount:{value:16},grid:{value:grid}};
  let cards=null,anchors=[],ratio=.85,sequence=0,disposed=false,loadedCount=0;
  function demo(){ctx.clearRect(0,0,size,size);for(let i=0;i<16;i++){const x=i*tile;ctx.fillStyle=i%2?'#35155e':'#10365b';ctx.fillRect(x,0,tile,tile);ctx.font=Math.floor(tile*.65)+'px sans-serif';ctx.textAlign='center';ctx.fillText('🐑',x+tile/2,tile*.73);}loadedCount=0;photoUniforms.tileCount.value=16;texture.needsUpdate=true}
- demo();
+ function loadDemo(){
+  const token=++sequence;demo();
+  if(typeof Image==='undefined')return Promise.resolve({demo:false,count:0});
+  return new Promise(resolve=>{
+   const image=new Image();image.onload=()=>{
+    if(disposed||token!==sequence){resolve({cancelled:true});return;}
+    ctx.clearRect(0,0,size,size);
+    for(let i=0;i<12;i++)ctx.drawImage(image,i*80,0,80,80,i*tile,0,tile,tile);
+    photoUniforms.tileCount.value=12;loadedCount=0;texture.needsUpdate=true;
+    resolve({demo:true,count:12});
+   };
+   image.onerror=()=>resolve({demo:false,count:0});
+   image.src=new URL('./assets/demo-portraits/atlas.jpg',location.href).href;
+  });
+ }
+ const demoReady=loadDemo();
  function build(data,w,h){anchors=selectPhotoAnchors(data,w,h,quality==='low'?960:quality==='high'?2000:1800);
  const geo=new THREE.PlaneGeometry(1,1),tiles=new Float32Array(anchors.length),weights=new Float32Array(anchors.length),brightness=new Float32Array(anchors.length);
  anchors.forEach((p,i)=>{tiles[i]=i;weights[i]=p.weight;brightness[i]=p.brightness});
@@ -54,6 +69,6 @@ export function createRamPhotos(THREE,parent,uniforms,{quality='medium',maxTextu
  if(loaded){ctx.clearRect(0,0,size,size);ctx.drawImage(staging,0,0);loadedCount=loaded;photoUniforms.tileCount.value=loaded;texture.needsUpdate=true}
  return {loaded,failed,limited:files.length>2000,visible:cards?.count||0};
  }
- return {build,setRatio,importFiles,reset(){sequence++;demo()},get count(){return cards?.count||0},get loadedCount(){return loadedCount},dispose(){disposed=true;sequence++;cards?.geometry.dispose();cards?.material.dispose();texture.dispose();if(cards)parent.remove(cards)}};
+ return {build,setRatio,importFiles,demoReady,reset:loadDemo,get count(){return cards?.count||0},get loadedCount(){return loadedCount},dispose(){disposed=true;sequence++;cards?.geometry.dispose();cards?.material.dispose();texture.dispose();if(cards)parent.remove(cards)}};
 }
 

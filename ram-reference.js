@@ -1,4 +1,4 @@
-import { createRamPhotos } from './ram-photos.js?v=cinema8';
+import { createRamPhotos } from './ram-photos.js?v=cinema9';
 // Reference-sampled depth relief; GPU gathering and orbit animation.
 export function createRamReference(THREE,scene,{quality='medium',maxTextureSize=4096}={}){
  const group=new THREE.Group();group.visible=false;group.name='RamReferenceParticles';scene.add(group);

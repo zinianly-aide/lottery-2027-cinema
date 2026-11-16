@@ -1,4 +1,4 @@
-import { createRamReference } from './ram-reference.js?v=cinema8';
+import { createRamReference } from './ram-reference.js?v=cinema9';
 import { createVoxelCloud } from './voxel.js?v=cinema3';
 import { createParticleEffects } from './effects.js?v=cinema3';
 import { createRamVisual } from './ram-visual.js?v=cinema5';
@@ -32,6 +32,7 @@ document.getElementById('operator-toggle').addEventListener('click',()=>{const o
 // Photo uploads are session-local and unrelated to winner selection.
 const photoInput=document.getElementById('ram-photo-files'),photoStatus=document.getElementById('ram-photo-status');
 let photoImportVersion=0;
+ramReference.photos.demoReady.then(result=>{if(photoImportVersion===0)photoStatus.textContent=result.demo?'12张演示照片 · 循环贴满曲面（非真实名单）':'演示照片加载失败，暂用小羊占位，可导入照片';});
 photoInput.addEventListener('change',async()=>{
  const version=++photoImportVersion;photoStatus.textContent='正在生成照片图集…';
  const result=await ramReference.photos.importFiles(photoInput.files,(done,total)=>{if(version===photoImportVersion)photoStatus.textContent='照片处理 '+done+'/'+total;});
@@ -40,7 +41,7 @@ photoInput.addEventListener('change',async()=>{
  photoInput.value='';autoShow=false;morph('ramref');
 });
 document.getElementById('ram-photo-ratio').addEventListener('input',e=>{ramReference.photos.setRatio(Number(e.target.value));document.getElementById('ram-photo-value').textContent=Math.round(Number(e.target.value)*100)+'%';});
-document.getElementById('ram-photo-reset').addEventListener('click',()=>{photoImportVersion++;ramReference.photos.reset();photoStatus.textContent='示例小羊 · 尚未导入真人照片';photoInput.value='';});
+document.getElementById('ram-photo-reset').addEventListener('click',async()=>{const version=++photoImportVersion;photoStatus.textContent='正在恢复演示照片…';photoInput.value='';const result=await ramReference.photos.reset();if(version===photoImportVersion&&!result.cancelled)photoStatus.textContent=result.demo?'12张演示照片 · 循环贴满曲面（非真实名单）':'演示照片加载失败，可重新导入';});
 
 // Playback controls are separate from the lottery operator panel, so they remain accessible on projectors.
 const speedRange=document.querySelector('#speed-range');

@@ -1,0 +1,163 @@
+{
+  "source": "User-provided generated portrait collage",
+  "count": 12,
+  "demoOnly": true,
+  "portraits": [
+    {
+      "file": "portrait-01.jpg",
+      "crop": [
+        18,
+        16,
+        380,
+        357
+      ],
+      "size": [
+        362,
+        341
+      ]
+    },
+    {
+      "file": "portrait-02.jpg",
+      "crop": [
+        398,
+        16,
+        759,
+        357
+      ],
+      "size": [
+        361,
+        341
+      ]
+    },
+    {
+      "file": "portrait-03.jpg",
+      "crop": [
+        778,
+        16,
+        1139,
+        357
+      ],
+      "size": [
+        361,
+        341
+      ]
+    },
+    {
+      "file": "portrait-04.jpg",
+      "crop": [
+        1157,
+        16,
+        1518,
+        357
+      ],
+      "size": [
+        361,
+        341
+      ]
+    },
+    {
+      "file": "portrait-05.jpg",
+      "crop": [
+        18,
+        376,
+        380,
+        707
+      ],
+      "size": [
+        362,
+        331
+      ]
+    },
+    {
+      "file": "portrait-06.jpg",
+      "crop": [
+        398,
+        376,
+        759,
+        707
+      ],
+      "size": [
+        361,
+        331
+      ]
+    },
+    {
+      "file": "portrait-07.jpg",
+      "crop": [
+        778,
+        376,
+        1139,
+        707
+      ],
+      "size": [
+        361,
+        331
+      ]
+    },
+    {
+      "file": "portrait-08.jpg",
+      "crop": [
+        1157,
+        376,
+        1518,
+        707
+      ],
+      "size": [
+        361,
+        331
+      ]
+    },
+    {
+      "file": "portrait-09.jpg",
+      "crop": [
+        18,
+        726,
+        380,
+        1070
+      ],
+      "size": [
+        362,
+        344
+      ]
+    },
+    {
+      "file": "portrait-10.jpg",
+      "crop": [
+        398,
+        726,
+        759,
+        1070
+      ],
+      "size": [
+        361,
+        344
+      ]
+    },
+    {
+      "file": "portrait-11.jpg",
+      "crop": [
+        778,
+        726,
+        1139,
+        1070
+      ],
+      "size": [
+        361,
+        344
+      ]
+    },
+    {
+      "file": "portrait-12.jpg",
+      "crop": [
+        1157,
+        726,
+        1518,
+        1070
+      ],
+      "size": [
+        361,
+        344
+      ]
+    }
+  ]
+}
