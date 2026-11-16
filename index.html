@@ -27,9 +27,9 @@
   <div class="dock-divider"></div>
   <label class="photo-import" for="ram-photo-files">导入头像照片（最多2000张）</label>
   <input id="ram-photo-files" type="file" accept="image/*" multiple>
-  <label for="ram-photo-ratio" class="dock-title">照片密度 <strong id="ram-photo-value">85%</strong></label>
-  <input id="ram-photo-ratio" type="range" min="0" max="1" step="0.05" value="0.85">
-  <button id="ram-photo-reset" type="button">恢复演示照片</button>
+  <label for="ram-photo-ratio" class="dock-title">照片密度 <strong id="ram-photo-value">约1200张</strong></label>
+  <input id="ram-photo-ratio" type="range" min="0" max="1" step="0.05" value="0.60">
+  <div class="photo-presets"><button type="button" data-photo-count="800">800张</button><button type="button" data-photo-count="1200" class="active">1200张</button><button type="button" data-photo-count="1600">1600张</button><button type="button" data-photo-count="2000">2000张</button></div><button id="ram-photo-reset" type="button">恢复演示照片</button>
   <p id="ram-photo-status" role="status">正在加载12张演示照片（循环使用）</p>
   <p class="dock-help">照片仅用于当前页面，刷新后需重新导入。</p>
   <p class="dock-help">调速只改变动画播放，不影响抽奖名额或结果。</p>

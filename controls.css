@@ -41,3 +41,8 @@ body.ram-active #note{color:#91bce8}
 .speed-dock{max-height:calc(100dvh - 32px);overflow-y:auto}.speed-dock input[type=file]{width:100%;font-size:11px;margin:9px 0;color:#a8d8ff}.photo-import{color:#bfe8ff;font-size:12px}#ram-photo-status{font-size:11px;color:#b9a4d6;line-height:1.5}
 
 #operator-toggle{display:none;position:fixed;left:18px;bottom:20px;z-index:60;border:1px solid #6694c6;background:#07182de8;color:#d8eaff;padding:10px 15px;border-radius:10px}body.photo-stage #operator-toggle{display:block}body.photo-stage .control{display:none}body.photo-stage.show-operator .control{display:block;z-index:40;max-height:65dvh;overflow:auto}body.photo-stage header{top:18px}body.photo-stage header h1{font-size:clamp(22px,3vw,42px)}body.photo-stage .note{display:none}
+
+/* Spatial photo ram A/B density presets. The presets stay within the speed dock. */
+.photo-presets{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0}
+.photo-presets button{flex:1;min-width:54px;padding:6px 4px;font-size:11px;border:1px solid #51789a;border-radius:6px;background:#132541;color:#d5e6ff;cursor:pointer}
+.photo-presets button.active{background:#5f3aa6;border-color:#f39aff;color:white}

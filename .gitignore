@@ -14,3 +14,6 @@ build/
 tmp/
 *.backup.*
 *.pre-perf.*
+
+# Local screenshot QA artifacts
+previews/
