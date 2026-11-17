@@ -41,7 +41,7 @@ export function selectPhotoAnchors(_data,_width,_height,limit=2000){
  const shoulderBands=5,shoulderRows=Math.floor((limit-out.length)/(shoulderBands*2));
  for(let row=0;row<shoulderRows;row++){
    const t=(row+.5)/shoulderRows,a=t*Math.PI*.8;
-   const cx=8.2+6.4*Math.sin(a),cy=-7.-18.*t,dx=6.4*Math.PI*.8*Math.cos(a),dy=-18.,len=Math.hypot(dx,dy);
+   const cx=13.0*Math.pow(1-t,.65),cy=-3.-23.*t,dx=-8.45*Math.pow(1-t,-.35),dy=-23.,len=Math.hypot(dx,dy);
    const r=1.25+.28*(1.-t);
    for(let band=0;band<shoulderBands;band++){
      const phi=-1.2+(band+.5+(row%2)*.14)*2.4/shoulderBands,sn=Math.sin(phi),cs=Math.cos(phi);
@@ -97,7 +97,12 @@ export function createRamPhotos(THREE,parent,uniforms,{quality='medium',maxTextu
  dummy.quaternion.setFromRotationMatrix(basis);dummy.position.set(p.x,p.y,p.z);dummy.scale.set(p.height*.96,p.width*1.15,1);dummy.updateMatrix();cards.setMatrixAt(i,dummy.matrix)});
  cards.instanceMatrix.needsUpdate=true;parent.add(cards);setRatio(ratio);
  }
- function setRatio(v){ratio=Math.max(0,Math.min(1,Number(v)||0));uniforms.photoMix.value=ratio;if(cards)cards.count=Math.floor(anchors.length*ratio/2)*2}
+ function setRatio(v){ratio=Math.max(0,Math.min(1,Number(v)||0));uniforms.photoMix.value=ratio;if(cards){
+ const count=Math.floor(anchors.length*ratio/2)*2;
+ const layout=selectPhotoAnchors(null,0,0,count);const dummy=new THREE.Object3D(),basis=new THREE.Matrix4();
+ layout.forEach((p,i)=>{const tangent=new THREE.Vector3(p.tx,p.ty,0).normalize(),normal=new THREE.Vector3(p.nx,p.ny,p.nz).normalize(),across=new THREE.Vector3().crossVectors(normal,tangent).normalize();basis.makeBasis(tangent,across,normal);dummy.quaternion.setFromRotationMatrix(basis);dummy.position.set(p.x,p.y,p.z);dummy.scale.set(p.height*1.12,p.width*1.35,1);dummy.updateMatrix();cards.setMatrixAt(i,dummy.matrix)});
+ cards.count=count;cards.instanceMatrix.needsUpdate=true;
+ }}
 
  async function importFiles(files,onProgress=()=>{}){
  const token=++sequence,list=Array.from(files).filter(f=>f.type.startsWith('image/')).slice(0,2000);

@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+const count=process.argv[2]||'1200';
+const page=await(await fetch('http://127.0.0.1:9222/json/new?'+encodeURIComponent('http://127.0.0.1:8877/ram-study.html?mode=ramref&quality=high&capture=1&photos='+count),{method:'PUT'})).json();
+const ws=new WebSocket(page.webSocketDebuggerUrl),waiting=new Map();let id=0;
+const guard=setTimeout(()=>process.exit(2),50000);
+ws.onmessage=e=>{const o=JSON.parse(e.data);if(o.method==='Runtime.consoleAPICalled'||o.method==='Runtime.exceptionThrown'||o.method==='Log.entryAdded')console.log(JSON.stringify(o).slice(0,3500));if(o.id){waiting.get(o.id)?.(o);waiting.delete(o.id)}};
+await new Promise(r=>ws.onopen=r);
+const ask=(method,params={})=>new Promise(r=>{console.log('STEP',method);waiting.set(++id,r);ws.send(JSON.stringify({id,method,params}))});
+await ask('Runtime.enable');await ask('Log.enable');
+await ask('Emulation.setDeviceMetricsOverride',{width:960,height:540,deviceScaleFactor:1,mobile:false});
+await new Promise(r=>setTimeout(r,9000));
+console.log(JSON.stringify(await ask('Runtime.evaluate',{expression:'JSON.stringify({proj:window.ramQA?.camera.projectionMatrix.elements,glerr:window.ramQA?.renderer.getContext().getError(),camera:window.ramQA?.camera.position.toArray(),children:window.ramQA?.scene.children.map(x=>[x.type,x.visible,x.position.toArray()]),ready:window.__cinemaReady,stats:window.ramPhotoStats,metrics:window.cinemaMetrics})',returnByValue:true})));
+await ask('Runtime.evaluate',{expression:"document.querySelectorAll('body > :not(#screen):not(script):not(style)').forEach(e=>e.style.visibility='hidden')"});
+const shot=await ask('Runtime.evaluate',{expression:"ramQA.renderer.domElement.toDataURL('image/png').split(',')[1]",returnByValue:true});fs.writeFileSync('/Volumes/ssd/lottery-cinema/previews/unified-'+count+'.png',Buffer.from(shot.result.result.value,'base64'));
+await ask('Page.close');clearTimeout(guard);ws.close();

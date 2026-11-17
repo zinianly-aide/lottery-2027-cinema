@@ -1,79 +1,52 @@
-import { createRamNeonDetail } from './ram-neon-detail.js?v=ram-20261117a';
-import { createRamPhotos } from './ram-photos.js?v=cinema10';
-// Reference-sampled depth relief; GPU gathering and orbit animation.
-export function createRamReference(THREE,scene,{quality='medium',maxTextureSize=4096}={}){
- const group=new THREE.Group();group.visible=false;group.name='RamReferenceParticles';scene.add(group);
- const uniforms={time:{value:0},gather:{value:0},intensity:{value:1},palette:{value:0},pointScale:{value:1},photoMix:{value:.85}};
- const photos=createRamPhotos(THREE,group,uniforms,{quality,maxTextureSize});
- const neonDetail=createRamNeonDetail(THREE,group,{quality});
- let requested=false,ready=false,start=null;
- function load(){if(requested)return;requested=true;const image=new Image();image.onload=()=>{
-  const c=document.createElement('canvas');c.width=640;c.height=360;const ctx=c.getContext('2d');ctx.drawImage(image,0,0,640,360);const data=ctx.getImageData(0,0,640,360).data;
-  // The glow reference plane is NOT the model. It preserves painted light
-  // behind true depth-correct photo cards and point-cloud anatomy.
-  // Alpha is driven by luminance so the underlying black does not become a slab.
-  const glowCanvas=document.createElement('canvas');glowCanvas.width=640;glowCanvas.height=360;
-  const gc=glowCanvas.getContext('2d');gc.drawImage(c,0,0,640,360);
-  const gd=gc.getImageData(0,0,640,360);
-  for(let y=0;y<360;y++)for(let x=0;x<640;x++){
-    const k=(y*640+x)*4;
-
-    const r=gd.data[k],g=gd.data[k+1],b=gd.data[k+2],l=Math.max(r,g,b);
-    const strength=Math.max(0,Math.min(1,(l-26)/140));
-    gd.data[k+3]=Math.round(255*strength*.87);
-    gd.data[k]=Math.min(255,Math.round(r*1.30));
-    gd.data[k+1]=Math.min(255,Math.round(g*1.30));
-    gd.data[k+2]=Math.min(255,Math.round(b*1.30));
-  }
-  gc.putImageData(gd,0,0);
-  const glowTex=new THREE.CanvasTexture(glowCanvas);glowTex.colorSpace=THREE.SRGBColorSpace;
-  const glow=new THREE.Mesh(new THREE.PlaneGeometry(85,47.8),
-   new THREE.MeshBasicMaterial({map:glowTex,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}));
-  glow.name='ReferenceGlowOnly';glow.position.set(0,0,-3.8);glow.renderOrder=-1;
-  group.add(glow);
-  photos.build(data,640,360);
-  const positions=[],colors=[],seeds=[],step=quality==='high'?1:quality==='low'?3:2;
-  for(let y=0;y<360;y+=step)for(let x=0;x<640;x+=step){// Asset is the clean, centered neon ram without explanatory side panels.
-
-  const i=(y*640+x)*4,r=data[i]/255,g=data[i+1]/255,b=data[i+2]/255,l=Math.max(r,g,b);
-  if(l<.31)continue;
-  const face=(x>240&&x<400&&y>80&&y<260);
-  const horn=(y<260 && (x<245 || x>400));
-  const hash=Math.abs(Math.sin(x*31.67+y*74.23)*43653.57)%1;
-  // In the horn volume, photos supply the surface; spare glow dust supplies gaps.
-  if(horn&&hash<.68)continue;
-  if(!face&&l<.48&&hash<.65)continue;
-  const X=(x-320)*.133,Y=(180-y)*.133;
-  const relief=9.5*Math.exp(-Math.pow(X/9.0,2)-Math.pow((Y-3.0)/11.5,2));
-  const z=l*1.1+relief;
-  positions.push(X,Y,z);colors.push(r,g,b);seeds.push(hash,Math.random(),Math.random());}
-  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));geometry.setAttribute('seed',new THREE.Float32BufferAttribute(seeds,3));
-  const material=new THREE.ShaderMaterial({uniforms,vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
-  vertexShader:`attribute vec3 seed;varying vec3 vColor;varying float vAlpha;uniform float time,gather,pointScale;void main(){vColor=color;vec3 p=position;float spread=1.-gather;p+=spread*vec3((seed.x-.5)*90.,(seed.y-.5)*60.,(seed.z-.5)*50.);p.z+=sin(p.y*.6+time*1.3+seed.x*3.)*.22;vec4 mv=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;gl_PointSize=clamp(pointScale*(165./-mv.z),.6,5.);vAlpha=(.78+.22*sin(time+seed.x*6.))*gather;}`,
-  fragmentShader:`varying vec3 vColor;varying float vAlpha;uniform float intensity,palette;void main(){float r=length(gl_PointCoord-.5)*2.;if(r>1.)discard;vec3 c=vColor;if(palette>1.5)c=max(max(c.r,c.g),c.b)*vec3(1.,.64,.22);else if(palette>.5)c=mix(c,c.brg,.25);gl_FragColor=vec4(c*2.15*intensity,pow(1.-r,.92)*vAlpha);}`});
-  const points=new THREE.Points(geometry,material);points.frustumCulled=false;group.add(points);
-  // Separate luminous anatomy: never dimmed by photo density.
-  const fp=[],fc=[];
-  function line(a,b,side=1){for(let j=0;j<=18;j++){const t=j/18;fp.push(side*(a[0]+(b[0]-a[0])*t),a[1]+(b[1]-a[1])*t,9);fc.push(side<0?.55:1.8,1.55,1.8);}}
-  for(const side of [-1,1]){
-   const eye=[[3.8,7.5],[4.6,8.6],[5.8,8.3],[5.4,7.0],[4.5,6.9],[3.8,7.5]];
-   for(let j=1;j<eye.length;j++)line(eye[j-1],eye[j],side);
-   line([0,-.3],[1.1,.4],side);line([1.1,.4],[.7,-1.1],side);line([.7,-1.1],[0,-1.7],side);
-   line([0,-1.7],[0,-2.6],side);line([0,-2.6],[1.3,-3.1],side);line([1.3,-3.1],[2.4,-2.6],side);
-  }
-  const faceGeo=new THREE.BufferGeometry();faceGeo.setAttribute('position',new THREE.Float32BufferAttribute(fp,3));faceGeo.setAttribute('color',new THREE.Float32BufferAttribute(fc,3));faceGeo.setAttribute('seed',new THREE.Float32BufferAttribute(new Float32Array(fp.length).fill(.5),3));
-  const anatomy=new THREE.Points(faceGeo,material);anatomy.frustumCulled=false;anatomy.visible=false;group.add(anatomy); // NeonDetail supersedes the old symbolic outline.ready=true;start=null;
- };image.onerror=()=>{requested=false;console.warn('Reference ram image unavailable; retry on next activation');};image.src='./assets/neon-ram-reference.jpg';
+import {createRamPhotos,selectPhotoAnchors} from './ram-photos.js?v=unified2';
+import {createRamNeonDetail} from './ram-neon-detail.js?v=unified2';
+// All geometry shares one coordinate system. No painted reference plane.
+export function createRamReference(T,scene,{quality='medium',maxTextureSize=4096}={}){
+ const group=new T.Group();group.visible=false;scene.add(group);
+ const uniforms={time:{value:0},gather:{value:1},intensity:{value:1},palette:{value:0},pointScale:{value:1},photoMix:{value:.6}};
+ const photos=createRamPhotos(T,group,uniforms,{quality,maxTextureSize});photos.build(null,0,0);
+ const anatomy=createRamNeonDetail(T,group,{quality});
+ const rnd=n=>{const s=Math.sin(n*127.1+311.7)*43758.5453;return s-Math.floor(s)};
+ const pos=[],col=[];
+ function add(x,y,z,brightness=1){pos.push(x,y,z);const t=Math.max(0,Math.min(1,(x+9)/18));col.push((.12+.88*t)*brightness,(.8-.62*t)*brightness,brightness)}
+ const anchors=selectPhotoAnchors(null,0,0,2000);
+ for(let i=0;i<(quality==='low'?22000:60000);i++){
+   const p=anchors[Math.floor(rnd(i*7)*anchors.length)];
+   add(p.x+(rnd(i+4)-.5)*.7,p.y+(rnd(i+8)-.5)*.7,p.z+(rnd(i+9)-.5)*.55,.4+rnd(i+2));
  }
- const count=quality==='low'?1400:quality==='high'?7000:3500,p=new Float32Array(count*3),c=new Float32Array(count*3);
- for(let i=0;i<count;i++){p[i*3]=i/count*Math.PI*2;p[i*3+1]=Math.random();p[i*3+2]=Math.random();c.set([.4,.4,1],i*3)}
- const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(p,3));geo.setAttribute('color',new THREE.BufferAttribute(c,3));
- const ribbon=new THREE.ShaderMaterial({uniforms,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,vertexShader:`uniform float time,gather,pointScale;varying vec3 vColor;void main(){float a=position.x+time*.22,w=1.+(position.y-.5)*.045;vec3 p=vec3(cos(a)*43.*w,sin(a)*7.*w+cos(a)*8.,sin(a)*15.+(position.z-.5));vec4 mv=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;gl_PointSize=clamp(pointScale*130./-mv.z,.5,4.);vColor=mix(vec3(.1,.6,1.),vec3(1.,.15,.8),sin(a)*.5+.5)*gather;}`,fragmentShader:`uniform float intensity,palette;varying vec3 vColor;void main(){float r=length(gl_PointCoord-.5)*2.;if(r>1.)discard;vec3 c=palette>1.5?vec3(1.,.65,.22)*length(vColor):vColor;gl_FragColor=vec4(c*intensity,(1.-r)*.75);}`});
- const orbit=new THREE.Points(geo,ribbon);orbit.frustumCulled=false;group.add(orbit);
- const platform=new THREE.Group();
- for(let i=0;i<3;i++){const halo=new THREE.Mesh(new THREE.TorusGeometry(8+i*3,.065,4,quality==='low'?64:120),new THREE.MeshBasicMaterial({color:i%2?0xfc54e8:0x38cfff,transparent:true,opacity:i===1?.65:.35,blending:THREE.AdditiveBlending,depthWrite:false}));halo.rotation.x=1.35;platform.add(halo);}
- platform.position.y=-24;group.add(platform);
-
- return {photos,setVisible(v){if(v&&!group.visible){start=null;uniforms.gather.value=0;load()}group.visible=!!v;},setPalette(v){uniforms.palette.value=v==='gold'?2:v==='neon'?1:0},setIntensity(v){uniforms.intensity.value=Math.max(0,Number(v)||0)},update(time,pixelRatio=1){if(!group.visible)return;if(start===null)start=time;uniforms.time.value=time;uniforms.gather.value=ready?(new URLSearchParams(location.search).has('capture')?1:Math.min(1,Math.max(0,(time-start)/2))):0;uniforms.pointScale.value=pixelRatio*(quality==='low'?2.15:quality==='high'?1.3:1.72);group.rotation.y=Math.sin(time*.23)*.09;group.position.y=-.5+Math.sin(time*.8)*.16;},get ready(){return ready},get visible(){return group.visible}};
+ // Broad shoulders converge toward a pointed fleece bib.
+ for(let i=0;i<20000;i++){
+   const t=rnd(i+181),y=1-t*27,w=14.5*Math.pow(Math.sin(Math.PI*(t*.9+.1)),.8);
+   const x=(rnd(i+381)*2-1)*w;
+   if(y>-10&&Math.abs(x)<8)continue;
+   add(x,y,1+4*Math.sqrt(Math.max(0,1-(x/w)**2)),.25+rnd(i+44)*.8);
+ }
+ // Ear interiors, behind the luminous rims.
+ for(const side of [-1,1])for(let i=0;i<2400;i++){
+   const t=rnd(i+51),w=Math.sin(Math.PI*t)*1.7;
+   add(side*(9+10*t),7.2+2*t+(rnd(i+63)*2-1)*w,6.5,.45+rnd(i+76));
+ }
+ function cloud(p,c,size){
+  const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(p,3));geo.setAttribute('color',new T.Float32BufferAttribute(c,3));
+  const mat=new T.ShaderMaterial({uniforms,vertexColors:true,transparent:true,depthWrite:false,blending:T.AdditiveBlending,
+   vertexShader:`varying vec3 vColor;uniform float pointScale;void main(){vColor=color;vec4 mv=modelViewMatrix*vec4(position,1.);gl_Position=projectionMatrix*mv;gl_PointSize=clamp(${size}*pointScale*65./-mv.z,.65,4.);}`,
+   fragmentShader:`varying vec3 vColor;uniform float intensity;void main(){float r=length(gl_PointCoord-.5)*2.;if(r>1.)discard;gl_FragColor=vec4(vColor*intensity,pow(1.-r,1.7)*.8);}`});
+  const m=new T.Points(geo,mat);group.add(m);return m;
+ }
+ cloud(pos,col,1.8);
+ const stars=[],starColors=[];
+ for(let i=0;i<2300;i++){stars.push((rnd(i+400)-.5)*125,(rnd(i+500)-.5)*76,-14-rnd(i+600)*25);starColors.push(.2+rnd(i+700)*.4,.25+rnd(i+800)*.4,.9)}cloud(stars,starColors,1.4);
+ const orbits=[];
+ for(let j=0;j<2;j++){
+  const p=[],c=[];
+  for(let i=0;i<6500;i++){const a=i/6500*Math.PI*2,r=36+(rnd(i+2)-.5)*1.3;
+   p.push(Math.cos(a)*r,Math.sin(a)*5+Math.cos(a)*(j===0?7:-8)-j*6,Math.sin(a)*16);
+   c.push(j===1?.15:1,j===1?.7:.15,1);
+  }orbits.push(cloud(p,c,2.1));
+ }
+ for(let i=0;i<3;i++){
+  const halo=new T.Mesh(new T.TorusGeometry(7+i*3,.045,6,180),new T.MeshBasicMaterial({color:i%2?0xff45ef:0x33dfff,transparent:true,opacity:.7,blending:T.AdditiveBlending,depthWrite:false}));
+  halo.rotation.x=Math.PI/2-.12;halo.position.y=-29;group.add(halo);
+ }
+ return {photos,setVisible(v){group.visible=!!v},setPalette(v){uniforms.palette.value=v==='gold'?2:0},setIntensity(v){uniforms.intensity.value=Number(v)||0},update(time,pixelRatio=1){if(!group.visible)return;const capture=new URLSearchParams(location.search).has('capture');uniforms.time.value=capture?0:time;uniforms.pointScale.value=pixelRatio;group.rotation.y=capture?0:Math.sin(time*.2)*.065;anatomy.update(capture?0:time);orbits.forEach((m,i)=>m.rotation.y=capture?0:Math.sin(time*.18+i)*.08);},get ready(){return true},get visible(){return group.visible}};
 }
-
