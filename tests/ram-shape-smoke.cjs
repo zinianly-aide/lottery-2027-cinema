@@ -39,7 +39,7 @@ assert(app.includes('ramVisual.setVisible'));
 assert(app.includes("14500,'ram'"));
 const fallback=source('fallback.js');
 assert(fallback.includes('drawFallback'));
-assert(fallback.includes("['text','sphere','matrix','scatter','ram']"));
+assert(fallback.includes("['text','sphere','matrix','scatter','ram','ramdepth','ramref']"));
 const css=source('controls.css');
 assert(css.includes('.control #ram'));
 assert(css.includes('body.ram-active'));

@@ -46,3 +46,7 @@ body.ram-active #note{color:#91bce8}
 .photo-presets{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0}
 .photo-presets button{flex:1;min-width:54px;padding:6px 4px;font-size:11px;border:1px solid #51789a;border-radius:6px;background:#132541;color:#d5e6ff;cursor:pointer}
 .photo-presets button.active{background:#5f3aa6;border-color:#f39aff;color:white}
+
+/* Independent historical reference depth cloud, separate from portrait ram. */
+.control #ramdepth{border-color:#4bc9fc;background:linear-gradient(120deg,#064266,#192c60);font-size:12px}
+.control #ramdepth[aria-pressed="true"],.control #ramref[aria-pressed="true"]{outline:2px solid #b5eaff;outline-offset:1px;box-shadow:0 0 15px #39bbfc66}
