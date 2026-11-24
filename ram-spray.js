@@ -39,9 +39,10 @@ export function createRamSpray(T, scene, {quality='medium',maxTextureSize=4096}=
   const horn=[-1,1].map(side=>{
     // Interpolate a path from the forehead around the upper horn and its spiral tip.
     const segments=[
-      new T.CubicBezierCurve3(new T.Vector3(0,12,13),new T.Vector3(side*5,19,15),new T.Vector3(side*13,29,10),new T.Vector3(side*25,24,6)),
-      new T.CubicBezierCurve3(new T.Vector3(side*25,24,6),new T.Vector3(side*36,18,4),new T.Vector3(side*34,3,7),new T.Vector3(side*24,1,10)),
-      new T.CubicBezierCurve3(new T.Vector3(side*24,1,10),new T.Vector3(side*13,-3,13),new T.Vector3(side*13,10,15),new T.Vector3(side*20,9,13))
+      // Anchor all three sections to the ACTUAL depth-ram horn silhouette, not an outer orbit.
+      new T.CubicBezierCurve3(new T.Vector3(0,7.8,10),new T.Vector3(side*5.6,13.4,10),new T.Vector3(side*13.0,19.2,8),new T.Vector3(side*21.5,16.4,7)),
+      new T.CubicBezierCurve3(new T.Vector3(side*21.5,16.4,7),new T.Vector3(side*28.5,12.4,6.6),new T.Vector3(side*28.0,3.5,8.7),new T.Vector3(side*19.8,2.0,10)),
+      new T.CubicBezierCurve3(new T.Vector3(side*19.8,2.0,10),new T.Vector3(side*14.0,1.3,11),new T.Vector3(side*13.5,8.2,11.8),new T.Vector3(side*18.3,8.6,11.5))
     ];
     const samples=[];for(let j=0;j<segments.length;j++)for(let i=0;i<85;i++)samples.push(segments[j].getPoint(i/84));
     return samples;
@@ -50,7 +51,7 @@ export function createRamSpray(T, scene, {quality='medium',maxTextureSize=4096}=
   for(let i=0;i<countLimit;i++){
     const side=i%2===0?-1:1,sideIndex=Math.floor(i/2),col=sideIndex%20,row=Math.floor(sideIndex/20);
     // Edge stacks are deterministic, deliberately preserve the central ram silhouette.
-    const x=side*(35+col*1.8), y=-26.8+row*1.86;
+    const x=side*(33.5+col*1.34), y=-26.8+row*1.86;
     wall.push({x:x+(hash(i+10)-.5)*.2,y:y+(hash(i+26)-.5)*.18,z:3+hash(i+44)*3,side});
   }
   let visible=false,start=0,active=Math.min(1200,countLimit),loadedCount=0,version=0,lastTime=0;
@@ -93,15 +94,15 @@ export function createRamSpray(T, scene, {quality='medium',maxTextureSize=4096}=
         const a=path[index],b=path[index+1];
         const tangentX=b.x-a.x,tangentY=b.y-a.y,len=Math.max(.001,Math.hypot(tangentX,tangentY));
         const phase=8*Math.PI*u+hash(i+9)*Math.PI*2;
-        const radius=.65+hash(i+8)*.85;
+        const radius=(.18+hash(i+8)*.28)*(.72+.28*Math.sin(Math.PI*clamp(u/.52)));
         x=lerp(a.x,b.x,q)-tangentY/len*Math.cos(phase)*radius;
         y=lerp(a.y,b.y,q)+tangentX/len*Math.cos(phase)*radius;
-        z=lerp(a.z,b.z,q)+Math.sin(phase)*radius;
+        z=lerp(a.z,b.z,q)+Math.sin(phase)*radius*.68;
         roll=Math.atan2(tangentY,tangentX)*.22+Math.sin(phase)*.24;
         scale=.35+.65*ease(u/.12);
       }else{
         const base=path[path.length-1],spray=clamp((u-.52)/.28),settle=ease((u-.78)/.22);
-        const midX=side*(48+hash(i+33)*11),midY=12+(hash(i+17)-.5)*46;
+        const midX=side*(36+hash(i+33)*11),midY=12+(hash(i+17)-.5)*46;
         // Quadratic curve into the side wall; ease only while docking.
         const f=ease(spray),r=1-f;
         let px=r*r*base.x+2*r*f*midX+f*f*w.x;

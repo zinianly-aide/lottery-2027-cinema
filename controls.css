@@ -57,3 +57,8 @@ body.ram-active #note{color:#91bce8}
 .spray-controls label{display:block;font-size:12px;margin:5px 0;color:#d3c6ff}
 .spray-controls input{width:100%;padding:0;margin:5px 0}
 .spray-controls button{width:100%;margin:2px 0;background:#633a94}
+
+/* Dedicated clean-cinema spray mode: no headline over the ram, dock at bottom. */
+body.spray-active header{display:none}
+body.spray-active .speed-dock{top:auto;bottom:16px;right:16px;max-height:70dvh}
+body.spray-active .speed-dock:not([open]){max-height:58px}

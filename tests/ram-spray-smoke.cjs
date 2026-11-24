@@ -6,6 +6,8 @@ assert(app.includes("ramSpray.setVisible(k==='ramspray',simClock/1000)"));
 assert(app.includes("ramDepth.setVisible(k==='ramdepth'||k==='ramspray')"));
 assert(app.includes("mode==='ramspray'?85"));
 assert(app.includes('ramSpray.update(sec)')&&app.includes('ramSpray.replay(simClock/1000)'));
+assert(spray.includes('const radius=(.18+hash(i+8)*.28)'),'close-to-horn orbit radius is used');
+assert(app.includes("ramDepth.setSilhouetteOnly(k==='ramspray')"),'spray removes only external orbit');
 assert(spray.includes('new T.InstancedMesh')&&spray.includes('new T.CubicBezierCurve3'));
 assert(spray.includes('importFiles')&&spray.includes('demoReady')&&spray.includes('cards.instanceMatrix.needsUpdate=true'));
 console.log('PASS independent ram spray mode, horn path, atlas instancing, docking, replay and UI');
