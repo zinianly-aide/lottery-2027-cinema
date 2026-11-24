@@ -7,9 +7,9 @@ const app=read('app.js'),html=read('index.html'),fallback=read('fallback.js'),de
 const old=require('node:child_process').execFileSync('git',['show','b5363a6:ram-reference.js'],{cwd:root,encoding:'utf8'}).replace('export function createRamReference(', 'export function createRamDepthReference(');
 assert.equal(depth.split('\n').slice(2).join('\n'),old,'historical implementation must remain identical except exported name');
 assert(html.includes('id="ramdepth"')&&html.includes('id="ramref"'),'both modes selectable');
-assert(app.includes("ramDepth.setVisible(k==='ramdepth')"),'depth must use separate scene group');
+assert(app.includes("ramDepth.setVisible(k==='ramdepth'||k==='ramspray')"),'depth must use separate scene group');
 assert(app.includes("ramReference.setVisible(k==='ramref')"),'portrait mode must remain intact');
-assert(app.includes("'ramdepth','ramref'"),'URL mode and controls include depth');
+assert(app.includes("'ramdepth','ramspray','ramref'"),'URL mode and controls include depth');
 assert(app.includes("mode==='ramdepth'?74"),'correct independent depth camera distance');
 assert(fallback.includes("mode==='ramdepth'"),'2D fallback must recognize the mode');
 assert(read('ram-study.html').includes('mode=ramdepth'),'standalone study has link to pure depth mode');

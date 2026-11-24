@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const dir=path.resolve(__dirname,'..'),src=f=>fs.readFileSync(path.join(dir,f),'utf8');
+const app=src('app.js'),html=src('index.html'),spray=src('ram-spray.js');
+assert(html.includes('id="ramspray"')&&html.includes('id="spray-replay"')&&html.includes('id="spray-count"'));
+assert(app.includes("ramSpray.setVisible(k==='ramspray',simClock/1000)"));
+assert(app.includes("ramDepth.setVisible(k==='ramdepth'||k==='ramspray')"));
+assert(app.includes("mode==='ramspray'?85"));
+assert(app.includes('ramSpray.update(sec)')&&app.includes('ramSpray.replay(simClock/1000)'));
+assert(spray.includes('new T.InstancedMesh')&&spray.includes('new T.CubicBezierCurve3'));
+assert(spray.includes('importFiles')&&spray.includes('demoReady')&&spray.includes('cards.instanceMatrix.needsUpdate=true'));
+console.log('PASS independent ram spray mode, horn path, atlas instancing, docking, replay and UI');

@@ -50,3 +50,10 @@ body.ram-active #note{color:#91bce8}
 /* Independent historical reference depth cloud, separate from portrait ram. */
 .control #ramdepth{border-color:#4bc9fc;background:linear-gradient(120deg,#064266,#192c60);font-size:12px}
 .control #ramdepth[aria-pressed="true"],.control #ramref[aria-pressed="true"]{outline:2px solid #b5eaff;outline-offset:1px;box-shadow:0 0 15px #39bbfc66}
+
+.control #ramspray{border-color:#dd77f1;background:linear-gradient(120deg,#233f78,#7d245e);font-size:12px}
+.control #ramspray[aria-pressed="true"]{outline:2px solid #e9adff;box-shadow:0 0 17px #c04efc99}
+.spray-controls{margin:8px 0;padding:8px;border:1px solid #644c98;border-radius:10px;background:#140f29cc}
+.spray-controls label{display:block;font-size:12px;margin:5px 0;color:#d3c6ff}
+.spray-controls input{width:100%;padding:0;margin:5px 0}
+.spray-controls button{width:100%;margin:2px 0;background:#633a94}

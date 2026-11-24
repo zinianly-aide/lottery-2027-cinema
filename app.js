@@ -1,5 +1,6 @@
 import { createRamReference } from './ram-reference.js?v=cinema10';
 import { createRamDepthReference } from './ram-depth.js?v=cinema11';
+import { createRamSpray } from './ram-spray.js?v=cinema12';
 import { createVoxelCloud } from './voxel.js?v=cinema3';
 import { createParticleEffects } from './effects.js?v=cinema3';
 import { createRamVisual } from './ram-visual.js?v=cinema5';
@@ -14,9 +15,10 @@ const ramTargets=ramShape.createTargets(N);
 const ramVisual=createRamVisual(THREE,scene,ramShape,{quality});
 const ramReference=createRamReference(THREE,scene,{quality,maxTextureSize:renderer.capabilities.maxTextureSize});
 const ramDepth=createRamDepthReference(THREE,scene,{quality});
+const ramSpray=createRamSpray(THREE,scene,{quality,maxTextureSize:renderer.capabilities.maxTextureSize});
 const canvas=document.createElement('canvas');canvas.width=860;canvas.height=270;const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.font='bold 235px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('2027',430,135);const pixels=ctx.getImageData(0,0,860,270).data,points=[];for(let y=0;y<270;y+=5)for(let x=0;x<860;x+=5)if(pixels[(y*860+x)*4+3]>60)points.push([(x-430)*.072,(135-y)*.072]);
-let mode='scatter',begin=0,dur=1850,autoShow=true,simClock=0,playbackRate=1,paused=false;const autoStages=[[2600,'text'],[8400,'sphere'],[14500,'ram'],[22000,'text']];let autoStage=0;function target(k,i){if(k==='ram'){const p=ramTargets[i];return new THREE.Vector3(p.x,p.y,p.z)}if(k==='text'){const p=points[Math.min(points.length-1,Math.floor((i+.5)*points.length/N))];return new THREE.Vector3(p[0]+(random(i,14)-.5)*.55,p[1]+(random(i,15)-.5)*.55,(random(i,16)-.5)*4)}if(k==='matrix'){const cols=Math.round(Math.sqrt(N*1.5)),rows=Math.ceil(N/cols);return new THREE.Vector3((i%cols-(cols-1)/2)*1.24,((rows-1)/2-Math.floor(i/cols))*1.16,Math.sin(i*.11)*3)}if(k==='scatter')return new THREE.Vector3((random(i,6)-.5)*78,(random(i,7)-.5)*43,(random(i,8)-.5)*42);const yy=1-2*(i+.5)/N,rad=Math.sqrt(1-yy*yy),theta=i*2.399963;return new THREE.Vector3(Math.cos(theta)*rad*23,yy*23,Math.sin(theta)*rad*23)}function morph(k){mode=k;mesh.visible=k!=='ramref'&&k!=='ramdepth';rings.visible=k!=='ramref'&&k!=='ramdepth';ramReference.setVisible(k==='ramref');ramDepth.setVisible(k==='ramdepth');for(let i=0;i<N;i++){starts[i].copy(positions[i]);targets[i].copy(target(k,i))}begin=simClock;gift.visible=k==='sphere';voxelCloud.setVisible(k==='scatter');ramVisual.setVisible(k==='ram');document.body.classList.toggle('ram-active',k==='ram');document.body.classList.toggle('photo-stage',k==='ramref'||k==='ramdepth');for(const id of ['ramdepth','ramref'])document.getElementById(id).setAttribute('aria-pressed',String(k===id));if(k==='ramref'||k==='ramdepth')document.getElementById('speed-dock').open=false;if(k==='ram')effects.burst(effects.palette==='gold'?'gold':'neon');if(k==='text')effects.burst('galaxy');updateParticleColors()}function updateParticleColors(){const preset=effects.palette;for(let i=0;i<N;i++)mesh.setColorAt(i,mode==='ram'?new THREE.Color(ramShape.hexFor(ramTargets[i],i,preset)):new THREE.Color().setHSL((preset==='gold'?.1:preset==='neon'?.76:.52)+random(i,3)*(preset==='gold'?.15:preset==='neon'?.2:.23),.84,.55+random(i,4)*.18));mesh.instanceColor.needsUpdate=true;ramVisual.setPalette(preset);ramReference.setPalette(preset);ramDepth.setPalette(preset)}morph('scatter');
-const axis=new THREE.Vector3(0,1,0);function draw(t){requestAnimationFrame(draw);if(lastDraw&&t-lastDraw<frameInterval-1.5)return;const dt=lastDraw&&!paused?Math.min((t-lastDraw)/1000,.09)*playbackRate:0;lastDraw=t;if(LOW&&!document.getElementById('reveal-overlay').hidden){lastSample=t;fpsFrames=0;slowWindows=0;return;}simClock+=dt*1000;if(autoShow&&autoStage<autoStages.length&&simClock>=autoStages[autoStage][0]){morph(autoStages[autoStage][1]);autoStage++}const sec=simClock/1000,u=Math.max(0,Math.min(1,(simClock-begin)/dur)),e=1-(1-u)**3;for(let i=0;i<N;i++){positions[i].lerpVectors(starts[i],targets[i],e);dummy.position.copy(positions[i]);if(mode==='sphere')dummy.position.applyAxisAngle(axis,sec*.14);dummy.rotation.set(Math.sin(sec*.5+i)*.25,sec*.16+i*.31,Math.cos(sec*.3+i)*.25);dummy.scale.setScalar(1+Math.sin(sec+i)*.08);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix)}mesh.instanceMatrix.needsUpdate=true;gift.rotation.y=sec*.38;gift.rotation.x=Math.sin(sec*.35)*.1;gift.position.y=Math.sin(sec)*.55;rings.rotation.z=sec*.055;starfield.rotation.z=sec*.008;voxelCloud.update(sec,dt);effects.update(sec,dt);ramVisual.update(sec);ramReference.update(sec,renderScale);ramDepth.update(sec,renderScale);camera.position.z+=((mode==='scatter'?65:mode==='ramref'?61:mode==='ramdepth'?74:88)-camera.position.z)*(1-Math.exp(-dt*.95));if(qs.has('capture')&&mode==='ramref')camera.position.z=61;
+let mode='scatter',begin=0,dur=1850,autoShow=true,simClock=0,playbackRate=1,paused=false;const autoStages=[[2600,'text'],[8400,'sphere'],[14500,'ram'],[22000,'text']];let autoStage=0;function target(k,i){if(k==='ram'){const p=ramTargets[i];return new THREE.Vector3(p.x,p.y,p.z)}if(k==='text'){const p=points[Math.min(points.length-1,Math.floor((i+.5)*points.length/N))];return new THREE.Vector3(p[0]+(random(i,14)-.5)*.55,p[1]+(random(i,15)-.5)*.55,(random(i,16)-.5)*4)}if(k==='matrix'){const cols=Math.round(Math.sqrt(N*1.5)),rows=Math.ceil(N/cols);return new THREE.Vector3((i%cols-(cols-1)/2)*1.24,((rows-1)/2-Math.floor(i/cols))*1.16,Math.sin(i*.11)*3)}if(k==='scatter')return new THREE.Vector3((random(i,6)-.5)*78,(random(i,7)-.5)*43,(random(i,8)-.5)*42);const yy=1-2*(i+.5)/N,rad=Math.sqrt(1-yy*yy),theta=i*2.399963;return new THREE.Vector3(Math.cos(theta)*rad*23,yy*23,Math.sin(theta)*rad*23)}function morph(k){mode=k;mesh.visible=!['ramref','ramdepth','ramspray'].includes(k);rings.visible=!['ramref','ramdepth','ramspray'].includes(k);ramReference.setVisible(k==='ramref');ramDepth.setVisible(k==='ramdepth'||k==='ramspray');ramSpray.setVisible(k==='ramspray',simClock/1000);for(let i=0;i<N;i++){starts[i].copy(positions[i]);targets[i].copy(target(k,i))}begin=simClock;gift.visible=k==='sphere';voxelCloud.setVisible(k==='scatter');ramVisual.setVisible(k==='ram');document.body.classList.toggle('ram-active',k==='ram');document.body.classList.toggle('photo-stage',['ramref','ramdepth','ramspray'].includes(k));for(const id of ['ramdepth','ramref','ramspray'])document.getElementById(id).setAttribute('aria-pressed',String(k===id));if(['ramref','ramdepth','ramspray'].includes(k))document.getElementById('speed-dock').open=false;if(k==='ram')effects.burst(effects.palette==='gold'?'gold':'neon');if(k==='text')effects.burst('galaxy');updateParticleColors()}function updateParticleColors(){const preset=effects.palette;for(let i=0;i<N;i++)mesh.setColorAt(i,mode==='ram'?new THREE.Color(ramShape.hexFor(ramTargets[i],i,preset)):new THREE.Color().setHSL((preset==='gold'?.1:preset==='neon'?.76:.52)+random(i,3)*(preset==='gold'?.15:preset==='neon'?.2:.23),.84,.55+random(i,4)*.18));mesh.instanceColor.needsUpdate=true;ramVisual.setPalette(preset);ramReference.setPalette(preset);ramDepth.setPalette(preset)}morph('scatter');
+const axis=new THREE.Vector3(0,1,0);function draw(t){requestAnimationFrame(draw);if(lastDraw&&t-lastDraw<frameInterval-1.5)return;const dt=lastDraw&&!paused?Math.min((t-lastDraw)/1000,.09)*playbackRate:0;lastDraw=t;if(LOW&&!document.getElementById('reveal-overlay').hidden){lastSample=t;fpsFrames=0;slowWindows=0;return;}simClock+=dt*1000;if(autoShow&&autoStage<autoStages.length&&simClock>=autoStages[autoStage][0]){morph(autoStages[autoStage][1]);autoStage++}const sec=simClock/1000,u=Math.max(0,Math.min(1,(simClock-begin)/dur)),e=1-(1-u)**3;for(let i=0;i<N;i++){positions[i].lerpVectors(starts[i],targets[i],e);dummy.position.copy(positions[i]);if(mode==='sphere')dummy.position.applyAxisAngle(axis,sec*.14);dummy.rotation.set(Math.sin(sec*.5+i)*.25,sec*.16+i*.31,Math.cos(sec*.3+i)*.25);dummy.scale.setScalar(1+Math.sin(sec+i)*.08);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix)}mesh.instanceMatrix.needsUpdate=true;gift.rotation.y=sec*.38;gift.rotation.x=Math.sin(sec*.35)*.1;gift.position.y=Math.sin(sec)*.55;rings.rotation.z=sec*.055;starfield.rotation.z=sec*.008;voxelCloud.update(sec,dt);effects.update(sec,dt);ramVisual.update(sec);ramReference.update(sec,renderScale);ramDepth.update(sec,renderScale);ramSpray.update(sec);camera.position.z+=((mode==='scatter'?65:mode==='ramref'?61:mode==='ramdepth'?74:mode==='ramspray'?85:88)-camera.position.z)*(1-Math.exp(-dt*.95));if(qs.has('capture')&&mode==='ramref')camera.position.z=61;
 renderer.render(scene,camera);
 if(qs.has('capture')&&!window.__ramCaptureSent&&ramReference.ready&&t>6800&&mode==='ramref'){
  window.__ramCaptureSent=true;
@@ -28,8 +30,8 @@ if(qs.has('capture')&&!window.__ramCaptureSent&&ramReference.ready&&t>6800&&mode
  },'image/png');
 }
 fpsFrames++;if(t-lastSample>=2500){const fps=Math.round(fpsFrames*1000/(t-lastSample));fpsFrames=0;lastSample=t;if(LOW&&t>8000&&fps<23)slowWindows++;else slowWindows=0;if(slowWindows>=2&&renderScale>.55){renderScale=Math.max(.55,Math.round((renderScale-.1)*100)/100);renderer.setPixelRatio(renderScale);slowWindows=0}if(qs.has('fps')){let hud=document.getElementById('fps-hud');if(!hud){hud=document.createElement('div');hud.id='fps-hud';hud.style.cssText='position:fixed;top:10px;left:10px;z-index:100;border:1px solid #6fe;background:#06172de0;padding:9px 12px;color:#7fecb8;font:14px monospace;border-radius:6px;pointer-events:none';document.body.appendChild(hud)}hud.textContent='Cinema '+quality+' / '+fps+' FPS / '+(paused?'暂停':playbackRate.toFixed(2)+'x')+' / '+Math.round(renderScale*100)+'% render / '+N+' cubes / '+renderer.info.render.calls+' draws'}window.cinemaMetrics={fps,quality,renderScale,instances:N,drawCalls:renderer.info.render.calls,playbackRate,paused}}}requestAnimationFrame(draw);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.position.z=innerWidth<800?115:88;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
-for(let k of ['text','sphere','matrix','scatter','ram','ramdepth','ramref'])document.getElementById(k).onclick=()=>{autoShow=false;morph(k)};
-if(['text','sphere','matrix','scatter','ram','ramdepth','ramref'].includes(qs.get('mode'))){
+for(let k of ['text','sphere','matrix','scatter','ram','ramdepth','ramspray','ramref'])document.getElementById(k).onclick=()=>{autoShow=false;morph(k)};
+if(['text','sphere','matrix','scatter','ram','ramdepth','ramspray','ramref'].includes(qs.get('mode'))){
  autoShow=false;morph(qs.get('mode'));
 }
 
@@ -48,10 +50,10 @@ let photoImportVersion=0;
 ramReference.photos.demoReady.then(result=>{if(photoImportVersion===0)photoStatus.textContent=result.demo?'12张演示照片 · 循环贴满曲面（非真实名单）':'演示照片加载失败，暂用小羊占位，可导入照片';});
 photoInput.addEventListener('change',async()=>{
  const version=++photoImportVersion;photoStatus.textContent='正在生成照片图集…';
- const result=await ramReference.photos.importFiles(photoInput.files,(done,total)=>{if(version===photoImportVersion)photoStatus.textContent='照片处理 '+done+'/'+total;});
+ const spraySelected=mode==='ramspray';const result=spraySelected?await ramSpray.importFiles(photoInput.files):await ramReference.photos.importFiles(photoInput.files,(done,total)=>{if(version===photoImportVersion)photoStatus.textContent='照片处理 '+done+'/'+total;});
  if(version!==photoImportVersion||result.cancelled)return;
  photoStatus.textContent=result.loaded?'已载入 '+result.loaded+' 张照片'+(result.failed?'，失败 '+result.failed+' 张':'')+(result.limited?'（最多2000张）':''):'没有可读取的图片，保留当前图集';
- photoInput.value='';autoShow=false;morph('ramref');
+ photoInput.value='';autoShow=false;morph(spraySelected?'ramspray':'ramref');
 });
 const photoRange=document.getElementById('ram-photo-ratio'),photoValue=document.getElementById('ram-photo-value');
 function setPhotoCount(count){
@@ -66,6 +68,14 @@ document.querySelectorAll('[data-photo-count]').forEach(b=>b.addEventListener('c
 ramReference.photos.demoReady.then(()=>setPhotoCount(qs.has('photos')?Number(qs.get('photos')):1200));
 document.getElementById('ram-photo-reset').addEventListener('click',async()=>{const version=++photoImportVersion;photoStatus.textContent='正在恢复演示照片…';photoInput.value='';const result=await ramReference.photos.reset();if(version===photoImportVersion&&!result.cancelled)photoStatus.textContent=result.demo?'12张演示照片 · 循环贴满曲面（非真实名单）':'演示照片加载失败，可重新导入';});
 
+// The spray owns its own time axis but uses the virtual clock for pause and speed.
+const spraySlider=document.getElementById('spray-count');
+const sprayCountLabel=document.getElementById('spray-count-value');
+function syncSprayCount(n){const active=ramSpray.setCount(n);spraySlider.value=String(active);sprayCountLabel.textContent=String(active);if(mode==='ramspray')ramSpray.replay(simClock/1000);}
+spraySlider.max=String(quality==='low'?240:quality==='high'?1600:1200);
+syncSprayCount(qs.has('sprayCount')?Number(qs.get('sprayCount')):(quality==='low'?240:1200));
+spraySlider.addEventListener('input',()=>syncSprayCount(Number(spraySlider.value)));
+document.getElementById('spray-replay').addEventListener('click',()=>{autoShow=false;if(mode!=='ramspray')morph('ramspray');ramSpray.replay(simClock/1000);});
 // Playback controls are separate from the lottery operator panel, so they remain accessible on projectors.
 const speedRange=document.querySelector('#speed-range');
 const speedValue=document.querySelector('#speed-value');
@@ -95,7 +105,7 @@ presetBtn.addEventListener('click',()=>{
 });
 document.querySelector('#effect-burst').addEventListener('click',()=>effects.burst(effects.palette==='gold'?'gold':'neon'));
 const intensity=document.querySelector('#effect-intensity');
-intensity.addEventListener('input',()=>{effects.setIntensity(Number(intensity.value));ramReference.setIntensity(Number(intensity.value));ramDepth.setIntensity(Number(intensity.value));});
+intensity.addEventListener('input',()=>{effects.setIntensity(Number(intensity.value));ramReference.setIntensity(Number(intensity.value));ramDepth.setIntensity(Number(intensity.value));ramSpray.setIntensity(Number(intensity.value));});
 const fullscreenButton=document.querySelector('#cinema-fullscreen');
 fullscreenButton?.addEventListener('click',async()=>{
  try{
@@ -109,5 +119,5 @@ document.addEventListener('fullscreenchange',()=>{
  if(fullscreenButton)fullscreenButton.textContent=document.fullscreenElement?'⤢ 退出全屏':'⛶ 全屏播放';
 });
 syncSpeedUI();
-if(!mobile&&!['ramref','ramdepth'].includes(qs.get('mode')))document.querySelector('#speed-dock').open=true;
+if(!mobile&&!['ramref','ramdepth','ramspray'].includes(qs.get('mode')))document.querySelector('#speed-dock').open=true;
 window.cinemaControls={get ramReferenceReady(){return ramReference.ready},get ramDepthReady(){return ramDepth.ready},setSpeed,morph,burst:(kind='gold')=>effects.burst(kind),get speed(){return playbackRate},get paused(){return paused}};
