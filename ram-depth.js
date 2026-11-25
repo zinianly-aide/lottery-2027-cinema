@@ -15,8 +15,11 @@ export function createRamDepthReference(THREE,scene,{quality='medium'}={}){
    const hornR=((x-397)/91)**2+((y-119)/104)**2<1;
    const face=((x-276)/77)**2+((y-170)/101)**2<1;
    const body=((x-278)/91)**2+((y-238)/85)**2<1;
-   const inHead=(hornL||hornR||face||body)&&x>58&&x<487;
-   masks.push(inHead?1:0);}
+   // Feather the silhouette so cut-off points never form sharp rectangular edges.
+   const d=Math.min(Math.hypot((x-151)/91,(y-119)/104),Math.hypot((x-397)/91,(y-119)/104),
+     Math.hypot((x-276)/77,(y-170)/101),Math.hypot((x-278)/91,(y-238)/85));
+   const edge=Math.max(0,Math.min(1,(1.04-d)/.15));
+   masks.push(edge*edge*(3-2*edge));}
   const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));geometry.setAttribute('seed',new THREE.Float32BufferAttribute(seeds,3));geometry.setAttribute('headMask',new THREE.Float32BufferAttribute(masks,1));
   const material=new THREE.ShaderMaterial({uniforms,vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
   vertexShader:`attribute vec3 seed;attribute float headMask;varying vec3 vColor;varying float vAlpha;uniform float time,gather,pointScale,silhouetteOnly;void main(){vColor=color;vec3 p=position;float spread=1.-gather;p+=spread*vec3((seed.x-.5)*90.,(seed.y-.5)*60.,(seed.z-.5)*50.);p.z+=sin(p.y*.6+time*1.3+seed.x*3.)*.22;vec4 mv=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;gl_PointSize=clamp(pointScale*(165./-mv.z),.6,5.);vAlpha=(.78+.22*sin(time+seed.x*6.))*gather*mix(1.,headMask,silhouetteOnly);}`,
